@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
-* Студент: [Сергей Трошин](https://up.htmlacademy.ru/ecmascript/16/user/496895).
-* Наставник: `Неизвестно`.
+- Студент: [Сергей Трошин](https://up.htmlacademy.ru/ecmascript/16/user/496895).
+- Наставник: [Владимир Якушкин](https://up.htmlacademy.ru/ecmascript/16/user/126208).
 
 ---
 
