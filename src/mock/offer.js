@@ -50,7 +50,8 @@ const generateOffers = (type) => {
   return titles.map((it, index) => ({
     id: index + 1,
     title: it,
-    price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
+    price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX),
+    isChecked: Boolean(getRandomInteger(0, 1))
   }));
 };
 
