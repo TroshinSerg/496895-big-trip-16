@@ -3,36 +3,34 @@ const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 's
 const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
 
 export const createEditPointTemplate = (point) => {
-  const {basePrice, dateFrom, dateTo, destination, id, offers, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
 
-  let eventTypeItemsMarkup = '';
-  let destinationOptionsMarkup = '';
   let offersMarkup = '';
   let imagesMarkup = '';
   let destinationMarkup = '';
 
-  TYPES.forEach((eventType) => {
-    eventTypeItemsMarkup += `<div class="event__type-item">
+  const eventTypeItemsMarkup = TYPES.map((eventType) => (
+    `<div class="event__type-item">
       <input id="event-type-${eventType}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
       <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-${id}">${eventType[0].toUpperCase() + eventType.slice(1)}</label>
-    </div>`;
-  });
+    </div>`
+  )).join('');
 
-  DESTINATIONS_NAMES.forEach((name) => {
-    destinationOptionsMarkup += `<option value="${name}"></option>`;
-  });
+  const destinationOptionsMarkup = DESTINATIONS_NAMES.map((name) => (
+    `<option value="${name}"></option>`
+  )).join('');
 
-  if (offers.offers.length) {
-    offers.offers.forEach((offer) => {
-      offersMarkup += `<div class="event__offer-selector">
+  if (additionalOffer.offers.length) {
+    offersMarkup = additionalOffer.offers.map((offer) => (
+      `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.mod}-${id}" type="checkbox" name="event-offer-${offer.mod}"${offer.isChecked ? ' checked' : ''}>
         <label class="event__offer-label" for="event-offer-${offer.mod}-${id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </label>
-      </div>`;
-    });
+      </div>`
+    )).join('');
 
     offersMarkup = `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -45,9 +43,13 @@ export const createEditPointTemplate = (point) => {
 
   if (destination.description) {
     if (destination.pictures.length) {
-      destination.pictures.forEach((it) => {
+      /*destination.pictures.forEach((it) => {
         imagesMarkup += `<img class="event__photo" src="${it.src}" alt="Event photo">`;
-      });
+      });*/
+
+      imagesMarkup = destination.pictures.map((picture) => (
+        `<img class="event__photo" src="${picture.src}" alt="Event photo">`
+      )).join('');
 
       imagesMarkup = `<div class="event__photos-container">
         <div class="event__photos-tape">
