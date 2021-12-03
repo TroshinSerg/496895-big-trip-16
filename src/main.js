@@ -32,8 +32,8 @@ const createTripInfoData = (pointsArray) => {
   pointsArray.forEach((point) => {
     totalPrice += point.basePrice;
 
-    if (point.offers.offers.length) {
-      totalPrice += point.offers.offers
+    if (point.additionalOffer.offers.length) {
+      totalPrice += point.additionalOffer.offers
         .filter((offer) => offer.isChecked)
         .reduce((totalOfferPrice, offer) => totalOfferPrice + offer.price, 0);
     }

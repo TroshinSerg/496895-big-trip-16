@@ -35,7 +35,7 @@ const generatePoint = (id, destinationId) => {
     destination: generateDestination(destinationId),
     id,
     isFavorite: Boolean(getRandomInteger()),
-    offer: generateOffer(type),
+    additionalOffer: generateOffer(type),
     type: type
   };
 };
