@@ -11,7 +11,7 @@ const BasePrice = {
 };
 
 const DESTINATION_COUNT = DESTINATIONS_NAMES.length;
-let currentDate = dayjs().toDate();
+let currentDate = dayjs();
 
 const generateDate = () => {
   const TimeGap = {
@@ -30,11 +30,11 @@ const generatePoint = (id, destinationId) => {
 
   return {
     basePrice: getRandomInteger(BasePrice.MIN, BasePrice.MAX),
-    dateFrom: generateDate(),//'2019-07-10T22:55:56.845Z',
-    dateTo: generateDate(),//'2019-07-11T11:22:13.375Z',
+    dateFrom: generateDate(),
+    dateTo: generateDate(),
     destination: generateDestination(destinationId),
-    id: id,
-    isFavorite: Boolean(getRandomInteger(0, 1)),
+    id,
+    isFavorite: Boolean(getRandomInteger()),
     offers: generateOffer(type),
     type: type
   };
