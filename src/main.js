@@ -22,33 +22,34 @@ const points = [...Array(POINTS_COUNT)].map((it, index) => {
   return generatePoint(index + 1, destinationId);
 });
 
-const createTripInfoData = (arr) => {
-  let route = new Set();
+const createTripInfoData = (pointsArray) => {
+  // Если назвать параметр points линтер ругается: points is already declared in the upper scope on line 20 column 7 no-shadow
+  const destinationsNames = new Set();
   let totalPrice = 0;
-  let startDate = new Date(arr[0].dateFrom).getTime();
-  let endDate = 0;
+  let startDateInSeconds = new Date(pointsArray[0].dateFrom).getTime();
+  let endDateInSeconds = 0;
 
-  arr.forEach((it) => {
-    totalPrice += it.basePrice;
+  pointsArray.forEach((point) => {
+    totalPrice += point.basePrice;
 
-    if (it.offers.offers.length) {
-      totalPrice += it.offers.offers.filter((offer) => offer.isChecked).reduce((a, b) => a + b.price, 0);
+    if (point.offers.offers.length) {
+      totalPrice += point.offers.offers
+        .filter((offer) => offer.isChecked)
+        .reduce((totalOfferPrice, offer) => totalOfferPrice + offer.price, 0);
     }
 
-    route.add(it.destination.name);
+    destinationsNames.add(point.destination.name);
 
-    if (new Date(it.dateFrom).getTime() < startDate) {
-      startDate = new Date(it.dateFrom).getTime();
-    }
+    // Если дата начала последующих точек маршрута ранее, чем дата старта маршрута - перезаписываем стартовую дату
+    startDateInSeconds = Math.min(startDateInSeconds, new Date(point.dateFrom).getTime());
 
-    if (new Date(it.dateTo).getTime() > endDate) {
-      endDate = new Date(it.dateTo).getTime();
-    }
+    // Если дата окончания последующих точек маршрута позже, чем дата окончания маршрута - перезаписываем дату окончания маршрута
+    endDateInSeconds = Math.max(endDateInSeconds, new Date(point.dateTo).getTime());
   });
 
-  route = [...route].join(' — ');
-  startDate = new Date(startDate);
-  endDate = new Date(endDate);
+  const route = [...destinationsNames].join(' — ');
+  const startDate = new Date(startDateInSeconds);
+  const endDate = new Date(endDateInSeconds);
 
   return {
     route,
