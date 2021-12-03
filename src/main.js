@@ -1,3 +1,4 @@
+import {getRandomInteger} from './utils.js';
 import {renderTemplate, RenderPosition} from './render.js';
 import {createMenuTemplate} from './view/menu-view.js';
 import {createFiltersTemplate} from './view/filters-view.js';
@@ -17,21 +18,9 @@ const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 const POINTS_COUNT = 15;
 const points = [];
 
-const DestinationIdMap = (() => {
-  const part = Math.floor(POINTS_COUNT / DESTINATION_COUNT);
-  const map = {};
-
-  for (let i = 1; i <= DESTINATION_COUNT; i++) {
-    map[part * i] = i - 1;
-  }
-
-  return map;
-})();
-
-const destinationIdMapKeys = Object.keys(DestinationIdMap);
-
 for (let i = 1; i <= POINTS_COUNT; i++) {
-  const destinationId = DestinationIdMap[destinationIdMapKeys.find((it) => parseInt(it, 10) >= i)];
+  const destinationId = getRandomInteger(0, DESTINATION_COUNT - 1);
+
   points.push(generatePoint(i, destinationId));
 }
 
