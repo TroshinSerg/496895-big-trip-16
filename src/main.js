@@ -16,13 +16,11 @@ const navigationElement = tripMainElement.querySelector('.trip-controls__navigat
 const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 
 const POINTS_COUNT = 15;
-const points = [];
 
-for (let i = 1; i <= POINTS_COUNT; i++) {
+const points = [...Array(POINTS_COUNT)].map((it, index) => {
   const destinationId = getRandomInteger(0, DESTINATION_COUNT - 1);
-
-  points.push(generatePoint(i, destinationId));
-}
+  return generatePoint(index + 1, destinationId);
+});
 
 const createTripInfoData = (arr) => {
   let route = new Set();
