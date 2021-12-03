@@ -1,22 +1,22 @@
 import dayjs from 'dayjs';
 
 export const createPointTemplate = (point) => {
-  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, isFavorite, additionalOffer, type} = point;
   let offersMarkup = '';
   const HOURS_IN_DAY = 24;
   const MINUTES_IN_HOUR = 60;
   const NUMBER_OF_CHARACTERS = 2;
   const PAD_STRING = '0';
 
-  const checkedOffers = offers.offers.filter((it) => it.isChecked);
+  const checkedOffers = additionalOffer.offers.filter((offer) => offer.isChecked);
 
   if (checkedOffers.length) {
-    checkedOffers.forEach((it) => (
-      offersMarkup += `<li class="event__offer">
-          <span class="event__offer-title">${it.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${it.price}</span>
-        </li>`
+    offersMarkup = checkedOffers.map((offer) => (
+      `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </li>`
     ));
 
     offersMarkup = `<h4 class="visually-hidden">Offers:</h4>
