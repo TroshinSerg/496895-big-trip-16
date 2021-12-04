@@ -21,14 +21,14 @@ const points = [...Array(POINTS_COUNT)].map((it, index) => {
   return generatePoint(index + 1, destinationId);
 });
 
-const createTripInfoData = (pointsArray) => {
+const createTripInfoData = (items) => {
   // Если назвать параметр points линтер ругается: points is already declared in the upper scope on line 20 column 7 no-shadow
   const destinationsNames = new Set();
   let totalPrice = 0;
-  let startDateInSeconds = new Date(pointsArray[0].dateFrom).getTime();
+  let startDateInSeconds = new Date(items[0].dateFrom).getTime();
   let endDateInSeconds = 0;
 
-  pointsArray.forEach((point) => {
+  items.forEach((point) => {
     totalPrice += point.basePrice;
 
     if (point.additionalOffer.offers.length) {
