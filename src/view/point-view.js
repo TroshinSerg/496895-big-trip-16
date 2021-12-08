@@ -1,6 +1,7 @@
+import {createElement} from "../render";
 import dayjs from 'dayjs';
 
-export const createPointTemplate = (point) => {
+const createPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, additionalOffer, type} = point;
   let offersMarkup = '';
   const HOURS_IN_DAY = 24;
@@ -66,3 +67,28 @@ export const createPointTemplate = (point) => {
     </div>
   </li>`;
 };
+
+
+export default class PointView {
+  #element = null;
+
+  constructor(point) {
+    this.point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPointTemplate(this.point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
