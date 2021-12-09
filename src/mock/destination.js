@@ -26,16 +26,22 @@ const generateDescription = () => {
 
 const generatePictures = () => {
   const picturesCount = getRandomInteger(NumberOfPictures.MIN, NumberOfPictures.MAX);
-  const pictures = [];
+  /*const pictures = [];
 
   for (let i = 1; i <= picturesCount; i++) {
     pictures.push({
       src: `${PHOTO_URL}${Math.random()}`,
       description: 'Lorem ipsum dolor sit amet'
     });
-  }
+  }*/
 
-  return pictures;
+  return [...Array(picturesCount)].map(() => (
+    {
+      src: `${PHOTO_URL}${Math.random()}`,
+      description: 'Lorem ipsum dolor sit amet'
+    }
+  ));
+
 };
 
 const generateDestination = (id) => ({
