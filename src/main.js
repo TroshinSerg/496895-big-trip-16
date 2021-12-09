@@ -1,3 +1,4 @@
+import {isEscKeyCode} from './utils.js';
 import {renderElement, RenderPosition} from './render.js';
 import MenuView from './view/menu-view.js';
 import FiltersView from './view/filters-view.js';
@@ -64,12 +65,28 @@ const renderPoint = (eventsListElement, point) => {
   const pointComponent = new PointView(point);
   const editPointComponent = new EditPointView(point);
 
+
   const replaceToPoint = () => {
     eventsListElement.replaceChild(pointComponent.element, editPointComponent.element);
   };
 
+  const onEscapeKeyDown = (evt) => {
+    if (isEscKeyCode(evt.keyCode)) {
+      evt.preventDefault();
+      replaceToPoint();
+      document.removeEventListener('keydown', onEscapeKeyDown);
+    }
+  };
+
   const replaceToEditPoint = () => {
     eventsListElement.replaceChild(editPointComponent.element, pointComponent.element);
+
+    document.addEventListener('keydown', onEscapeKeyDown);
+
+    editPointComponent.element.addEventListener('click', () => {
+      replaceToPoint();
+      document.addEventListener('keydown', onEscapeKeyDown);
+    });
   };
 
   pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
