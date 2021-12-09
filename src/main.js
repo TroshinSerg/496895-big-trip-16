@@ -59,16 +59,39 @@ const createTripInfoData = (items) => {
     endDate
   };
 };
-const fragment = document.createDocumentFragment();
 
-points.forEach((point, index) => {
-  fragment.append(index ? new PointView(point).element : new EditPointView(point).element);
-});
+const renderPoint = (eventsListElement, point) => {
+  const pointComponent = new PointView(point);
+  const editPointComponent = new EditPointView(point);
+
+  const replaceToPoint = () => {
+    eventsListElement.replaceChild(pointComponent.element, editPointComponent.element);
+  };
+
+  const replaceToEditPoint = () => {
+    eventsListElement.replaceChild(editPointComponent.element, pointComponent.element);
+  };
+
+  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceToEditPoint();
+  });
+
+  editPointComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceToPoint();
+  });
+
+  renderElement(eventsListComponent.element, pointComponent.element, RenderPosition.BEFOREEND);
+};
 
 renderElement(tripMainElement, new TripInfoView(createTripInfoData(points)).element, RenderPosition.AFTERBEGIN);
 renderElement(navigationElement, new MenuView().element, RenderPosition.BEFOREEND);
 renderElement(filtersElement, new FiltersView().element, RenderPosition.BEFOREEND);
 renderElement(tripEventsElement, new SortView().element, RenderPosition.BEFOREEND);
 renderElement(tripEventsElement, eventsListComponent.element, RenderPosition.BEFOREEND);
-renderElement(eventsListComponent.element, fragment, RenderPosition.BEFOREEND);
+
+points.forEach((point) => {
+  renderPoint(eventsListComponent.element, point);
+});
+
 renderElement(eventsListComponent.element, new AddPointView().element, RenderPosition.BEFOREEND);
