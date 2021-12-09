@@ -1,4 +1,4 @@
-import {createElement} from "../render";
+import {createElement} from '../render';
 import dayjs from 'dayjs';
 
 const createPointTemplate = (point) => {

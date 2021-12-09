@@ -1,4 +1,4 @@
-import {createElement} from "../render";
+import {createElement} from '../render';
 import dayjs from 'dayjs';
 
 const generateEventPeriod = (startDate, endDate) => {
@@ -20,7 +20,6 @@ const createTripInfoTemplate = ({route, totalPrice, startDate, endDate}) => (
     </p>
   </section>`
 );
-
 
 export default class TripInfoView {
   #element = null;

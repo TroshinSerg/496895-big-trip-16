@@ -1,4 +1,4 @@
-import {createElement} from "../render";
+import {createElement} from '../render';
 import dayjs from 'dayjs';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
