@@ -1,8 +1,9 @@
+import {createElement} from '../render';
 import dayjs from 'dayjs';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
 
-export const createEditPointTemplate = (point) => {
+const createEditPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
 
   let offersMarkup = '';
@@ -124,3 +125,29 @@ export const createEditPointTemplate = (point) => {
     </form>
   </li>`;
 };
+
+
+export default class EditPointView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createEditPointTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

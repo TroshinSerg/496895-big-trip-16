@@ -10,15 +10,15 @@ const BasePrice = {
   MAX: 1100
 };
 
+const TimeGap = {
+  MIN: 40,
+  MAX: 120
+};
+
 const DESTINATION_COUNT = DESTINATIONS_NAMES.length;
 let currentDate = dayjs();
 
 const generateDate = () => {
-  const TimeGap = {
-    MIN: 40,
-    MAX: 120
-  };
-
   const date = dayjs(currentDate).add(getRandomInteger(TimeGap.MIN, TimeGap.MAX), 'minute').toDate();
   currentDate = date;
 

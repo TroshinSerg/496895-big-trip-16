@@ -1,4 +1,6 @@
-export const createAddPointTemplate = () => (
+import {createElement} from '../render';
+
+const createAddPointTemplate = () => (
   `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -162,3 +164,23 @@ export const createAddPointTemplate = () => (
     </form>
   </li>`
 );
+
+export default class AddPointView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createAddPointTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
