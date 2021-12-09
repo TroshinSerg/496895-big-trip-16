@@ -14,7 +14,7 @@ const tripEventsElement = document.querySelector('.trip-events');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
 const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 
-const eventsListElement = new EventsListView().element;
+const eventsListComponent = new EventsListView();
 
 const POINTS_COUNT = 15;
 
@@ -69,6 +69,6 @@ renderElement(tripMainElement, new TripInfoView(createTripInfoData(points)).elem
 renderElement(navigationElement, new MenuView().element, RenderPosition.BEFOREEND);
 renderElement(filtersElement, new FiltersView().element, RenderPosition.BEFOREEND);
 renderElement(tripEventsElement, new SortView().element, RenderPosition.BEFOREEND);
-renderElement(tripEventsElement, eventsListElement, RenderPosition.BEFOREEND);
-renderElement(eventsListElement, fragment, RenderPosition.BEFOREEND);
-renderElement(eventsListElement, new AddPointView().element, RenderPosition.BEFOREEND);
+renderElement(tripEventsElement, eventsListComponent.element, RenderPosition.BEFOREEND);
+renderElement(eventsListComponent.element, fragment, RenderPosition.BEFOREEND);
+renderElement(eventsListComponent.element, new AddPointView().element, RenderPosition.BEFOREEND);

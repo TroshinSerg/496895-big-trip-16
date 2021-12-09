@@ -129,9 +129,10 @@ const createEditPointTemplate = (point) => {
 
 export default class EditPointView {
   #element = null;
+  #point = null;
 
   constructor(point) {
-    this.point = point;
+    this.#point = point;
   }
 
   get element() {
@@ -143,7 +144,7 @@ export default class EditPointView {
   }
 
   get template() {
-    return createEditPointTemplate(this.point);
+    return createEditPointTemplate(this.#point);
   }
 
   removeElement() {

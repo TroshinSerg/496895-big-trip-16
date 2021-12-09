@@ -23,9 +23,10 @@ const createTripInfoTemplate = ({route, totalPrice, startDate, endDate}) => (
 
 export default class TripInfoView {
   #element = null;
+  #data = null;
 
   constructor(data) {
-    this.data = data;
+    this.#data = data;
   }
 
   get element() {
@@ -37,7 +38,7 @@ export default class TripInfoView {
   }
 
   get template() {
-    return createTripInfoTemplate(this.data);
+    return createTripInfoTemplate(this.#data);
   }
 
   removeElement() {
