@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 
 const createPointTemplate = (point) => {
@@ -68,28 +68,15 @@ const createPointTemplate = (point) => {
   </li>`;
 };
 
-
-export default class PointView {
-  #element = null;
+export default class PointView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPointTemplate(this.#point);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
