@@ -1,8 +1,10 @@
+import {isEscKeyCode} from './utils.js';
 import {renderElement, RenderPosition} from './render.js';
 import MenuView from './view/menu-view.js';
 import FiltersView from './view/filters-view.js';
 import SortView from './view/sort-view.js';
 import EventsListView from './view/events-list-view.js';
+import NoEventsView from './view/no-events-view.js';
 import PointView from './view/point-view.js';
 import EditPointView from './view/edit-point-view.js';
 import AddPointView from './view/add-point-view.js';
@@ -15,16 +17,16 @@ const navigationElement = tripMainElement.querySelector('.trip-controls__navigat
 const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 
 const eventsListComponent = new EventsListView();
+const filtersComponent = new FiltersView();
 
-const POINTS_COUNT = 15;
+const POINTS_COUNT = 0;
 
 const points = [...Array(POINTS_COUNT)].map((it, index) => {
   const destinationId = index % DESTINATION_COUNT;
   return generatePoint(index + 1, destinationId);
 });
 
-const createTripInfoData = (items) => {
-  // Если назвать параметр points линтер ругается: points is already declared in the upper scope on line 20 column 7 no-shadow
+const createTripInfoData = (items = []) => {
   const destinationsNames = new Set();
   let totalPrice = 0;
   let startDateInSeconds = new Date(items[0].dateFrom).getTime();
@@ -64,12 +66,28 @@ const renderPoint = (eventsListElement, point) => {
   const pointComponent = new PointView(point);
   const editPointComponent = new EditPointView(point);
 
+
   const replaceToPoint = () => {
     eventsListElement.replaceChild(pointComponent.element, editPointComponent.element);
   };
 
+  const onEscapeKeyDown = (evt) => {
+    if (isEscKeyCode(evt.keyCode)) {
+      evt.preventDefault();
+      replaceToPoint();
+      document.removeEventListener('keydown', onEscapeKeyDown);
+    }
+  };
+
   const replaceToEditPoint = () => {
     eventsListElement.replaceChild(editPointComponent.element, pointComponent.element);
+
+    document.addEventListener('keydown', onEscapeKeyDown);
+
+    editPointComponent.element.addEventListener('click', () => {
+      replaceToPoint();
+      document.addEventListener('keydown', onEscapeKeyDown);
+    });
   };
 
   pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
@@ -84,14 +102,40 @@ const renderPoint = (eventsListElement, point) => {
   renderElement(eventsListComponent.element, pointComponent.element, RenderPosition.BEFOREEND);
 };
 
-renderElement(tripMainElement, new TripInfoView(createTripInfoData(points)).element, RenderPosition.AFTERBEGIN);
 renderElement(navigationElement, new MenuView().element, RenderPosition.BEFOREEND);
-renderElement(filtersElement, new FiltersView().element, RenderPosition.BEFOREEND);
-renderElement(tripEventsElement, new SortView().element, RenderPosition.BEFOREEND);
-renderElement(tripEventsElement, eventsListComponent.element, RenderPosition.BEFOREEND);
+renderElement(filtersElement, filtersComponent.element, RenderPosition.BEFOREEND);
 
-points.forEach((point) => {
-  renderPoint(eventsListComponent.element, point);
-});
+if (points.length) {
+  renderElement(tripMainElement, new TripInfoView(createTripInfoData(points)).element, RenderPosition.AFTERBEGIN);
+  renderElement(tripEventsElement, new SortView().element, RenderPosition.BEFOREEND);
+  renderElement(tripEventsElement, eventsListComponent.element, RenderPosition.BEFOREEND);
 
-renderElement(eventsListComponent.element, new AddPointView().element, RenderPosition.BEFOREEND);
+  points.forEach((point) => {
+    renderPoint(eventsListComponent.element, point);
+  });
+  renderElement(eventsListComponent.element, new AddPointView().element, RenderPosition.BEFOREEND);
+} else {
+  const NoEventsComponentMap = {};
+
+  filtersComponent.element.elements['trip-filter'].forEach((filter) => {
+    NoEventsComponentMap[filter.value.toUpperCase()] = new NoEventsView(filter.value);
+  });
+
+  // Значение переменной activeFilterValue изменится при событии change у элемента компонента фильтров
+  let activeFilterValue = filtersComponent.element.querySelector('input:checked').value.toUpperCase();
+  renderElement(tripEventsElement, NoEventsComponentMap[activeFilterValue].element, RenderPosition.BEFOREEND);
+
+  filtersComponent.element.addEventListener('change', (evt) => {
+    const filterInput = evt.target.closest('.trip-filters__filter-input');
+
+    if (filterInput) {
+      evt.preventDefault();
+      const newActiveFilterValue = filterInput.value.toUpperCase();
+
+      tripEventsElement.replaceChild(NoEventsComponentMap[newActiveFilterValue].element, NoEventsComponentMap[activeFilterValue].element);
+
+      // Обновляем значение переменной activeFilterValue на значение активного фильтра
+      activeFilterValue = newActiveFilterValue;
+    }
+  });
+}
