@@ -25,4 +25,14 @@ export default class FiltersView extends AbstractView {
   get template() {
     return createFiltersTemplate();
   }
+
+  setFormChangeHandler = (callback) => {
+    this._callback.formChange = callback;
+    this.element.addEventListener('change', this.#formChangeHandler);
+  };
+
+  #formChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formChange(evt);
+  }
 }
