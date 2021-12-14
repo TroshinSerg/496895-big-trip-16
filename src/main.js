@@ -19,7 +19,7 @@ const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 const eventsListComponent = new EventsListView();
 const filtersComponent = new FiltersView();
 
-const POINTS_COUNT = 3;
+const POINTS_COUNT = 15;
 
 const points = [...Array(POINTS_COUNT)].map((it, index) => {
   const destinationId = index % DESTINATION_COUNT;
@@ -100,12 +100,37 @@ const renderPoint = (listComponent, point) => {
   render(listComponent, pointComponent, RenderPosition.BEFOREEND);
 };
 
-//const renderList = (isDataAvailable) => {};
+const renderNoEventsMessage = () => {
+  const NoEventsComponentMap = {};
 
-render(navigationElement, new MenuView(), RenderPosition.BEFOREEND);
-render(filtersElement, filtersComponent, RenderPosition.BEFOREEND);
+  filtersComponent.element.elements['trip-filter'].forEach((filter) => {
+    NoEventsComponentMap[filter.value.toUpperCase()] = new NoEventsView(filter.value);
+  });
 
-if (points.length) {
+  // Значение переменной activeFilterValue изменится при событии change у элемента компонента фильтров
+  let activeFilterValue = filtersComponent.element.querySelector('input:checked').value.toUpperCase();
+  render(tripEventsElement, NoEventsComponentMap[activeFilterValue], RenderPosition.BEFOREEND);
+
+  const changeNoEventsMessage = (evt) => {
+    const filterInput = evt.target.closest('.trip-filters__filter-input');
+
+    if (filterInput) {
+      evt.preventDefault();
+      const newActiveFilterValue = filterInput.value.toUpperCase();
+
+      replace(NoEventsComponentMap[newActiveFilterValue], NoEventsComponentMap[activeFilterValue]);
+
+      // Обновляем значение переменной activeFilterValue на значение активного фильтра
+      activeFilterValue = newActiveFilterValue;
+    }
+  };
+
+  filtersComponent.setFormChangeHandler((evt) => {
+    changeNoEventsMessage(evt);
+  });
+};
+
+const renderEventsBoard = () => {
   render(tripMainElement, new TripInfoView(createTripInfoData(points)), RenderPosition.AFTERBEGIN);
   render(tripEventsElement, new SortView(), RenderPosition.BEFOREEND);
   render(tripEventsElement, eventsListComponent, RenderPosition.BEFOREEND);
@@ -115,28 +140,13 @@ if (points.length) {
   });
 
   render(eventsListComponent, new AddPointView(), RenderPosition.BEFOREEND);
-} else {
-  const NoEventsComponentMap = {};
+};
 
-  filtersComponent.element.elements['trip-filter'].forEach((filter) => {
-    NoEventsComponentMap[filter.value.toUpperCase()] = new NoEventsView(filter.value);
-  });
+const renderControls = () => {
+  render(navigationElement, new MenuView(), RenderPosition.BEFOREEND);
+  render(filtersElement, filtersComponent, RenderPosition.BEFOREEND);
+};
 
-  // Значение переменной activeFilterValue изменится при событии change у элемента компонента фильтров
-  let activeFilterValue = filtersComponent.element.querySelector('input:checked').value.toUpperCase();
-  render(tripEventsElement, NoEventsComponentMap[activeFilterValue].element, RenderPosition.BEFOREEND);
+renderControls();
+(points.length ? renderEventsBoard : renderNoEventsMessage)();
 
-  filtersComponent.element.addEventListener('change', (evt) => {
-    const filterInput = evt.target.closest('.trip-filters__filter-input');
-
-    if (filterInput) {
-      evt.preventDefault();
-      const newActiveFilterValue = filterInput.value.toUpperCase();
-
-      tripEventsElement.replaceChild(NoEventsComponentMap[newActiveFilterValue].element, NoEventsComponentMap[activeFilterValue].element);
-
-      // Обновляем значение переменной activeFilterValue на значение активного фильтра
-      activeFilterValue = newActiveFilterValue;
-    }
-  });
-}
