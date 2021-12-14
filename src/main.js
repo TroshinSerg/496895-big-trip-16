@@ -1,5 +1,5 @@
 import {isEscKeyCode} from './utils/common.js';
-import {renderElement, RenderPosition} from './render.js';
+import {render, replace, remove, RenderPosition} from './utils/render.js';
 import MenuView from './view/menu-view.js';
 import FiltersView from './view/filters-view.js';
 import SortView from './view/sort-view.js';
@@ -19,7 +19,7 @@ const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 const eventsListComponent = new EventsListView();
 const filtersComponent = new FiltersView();
 
-const POINTS_COUNT = 0;
+const POINTS_COUNT = 3;
 
 const points = [...Array(POINTS_COUNT)].map((it, index) => {
   const destinationId = index % DESTINATION_COUNT;
@@ -62,13 +62,14 @@ const createTripInfoData = (items = []) => {
   };
 };
 
-const renderPoint = (eventsListElement, point) => {
+const renderPoint = (eventsListComponent, point) => {
   const pointComponent = new PointView(point);
   const editPointComponent = new EditPointView(point);
 
 
   const replaceToPoint = () => {
-    eventsListElement.replaceChild(pointComponent.element, editPointComponent.element);
+    //eventsListComponent.element.replaceChild(pointComponent.element, editPointComponent.element);
+    replace(pointComponent, editPointComponent);
   };
 
   const onEscapeKeyDown = (evt) => {
@@ -80,7 +81,8 @@ const renderPoint = (eventsListElement, point) => {
   };
 
   const replaceToEditPoint = () => {
-    eventsListElement.replaceChild(editPointComponent.element, pointComponent.element);
+    //eventsListComponent.element.replaceChild(editPointComponent.element, pointComponent.element);
+    replace(editPointComponent, pointComponent);
 
     document.addEventListener('keydown', onEscapeKeyDown);
 
@@ -99,21 +101,24 @@ const renderPoint = (eventsListElement, point) => {
     replaceToPoint();
   });
 
-  renderElement(eventsListComponent.element, pointComponent.element, RenderPosition.BEFOREEND);
+  render(eventsListComponent, pointComponent, RenderPosition.BEFOREEND);
 };
 
-renderElement(navigationElement, new MenuView().element, RenderPosition.BEFOREEND);
-renderElement(filtersElement, filtersComponent.element, RenderPosition.BEFOREEND);
+//const renderList = (isDataAvailable) => {};
+
+render(navigationElement, new MenuView(), RenderPosition.BEFOREEND);
+render(filtersElement, filtersComponent, RenderPosition.BEFOREEND);
 
 if (points.length) {
-  renderElement(tripMainElement, new TripInfoView(createTripInfoData(points)).element, RenderPosition.AFTERBEGIN);
-  renderElement(tripEventsElement, new SortView().element, RenderPosition.BEFOREEND);
-  renderElement(tripEventsElement, eventsListComponent.element, RenderPosition.BEFOREEND);
+  render(tripMainElement, new TripInfoView(createTripInfoData(points)), RenderPosition.AFTERBEGIN);
+  render(tripEventsElement, new SortView(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, eventsListComponent, RenderPosition.BEFOREEND);
 
   points.forEach((point) => {
-    renderPoint(eventsListComponent.element, point);
+    renderPoint(eventsListComponent, point);
   });
-  renderElement(eventsListComponent.element, new AddPointView().element, RenderPosition.BEFOREEND);
+
+  render(eventsListComponent, new AddPointView(), RenderPosition.BEFOREEND);
 } else {
   const NoEventsComponentMap = {};
 
@@ -123,7 +128,7 @@ if (points.length) {
 
   // Значение переменной activeFilterValue изменится при событии change у элемента компонента фильтров
   let activeFilterValue = filtersComponent.element.querySelector('input:checked').value.toUpperCase();
-  renderElement(tripEventsElement, NoEventsComponentMap[activeFilterValue].element, RenderPosition.BEFOREEND);
+  render(tripEventsElement, NoEventsComponentMap[activeFilterValue].element, RenderPosition.BEFOREEND);
 
   filtersComponent.element.addEventListener('change', (evt) => {
     const filterInput = evt.target.closest('.trip-filters__filter-input');
