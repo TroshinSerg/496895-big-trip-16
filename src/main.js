@@ -66,9 +66,7 @@ const renderPoint = (listComponent, point) => {
   const pointComponent = new PointView(point);
   const editPointComponent = new EditPointView(point);
 
-
   const replaceToPoint = () => {
-    //eventsListComponent.element.replaceChild(pointComponent.element, editPointComponent.element);
     replace(pointComponent, editPointComponent);
   };
 
@@ -81,24 +79,22 @@ const renderPoint = (listComponent, point) => {
   };
 
   const replaceToEditPoint = () => {
-    //eventsListComponent.element.replaceChild(editPointComponent.element, pointComponent.element);
     replace(editPointComponent, pointComponent);
-
-    document.addEventListener('keydown', onEscapeKeyDown);
-
-    editPointComponent.element.addEventListener('click', () => {
-      replaceToPoint();
-      document.addEventListener('keydown', onEscapeKeyDown);
-    });
   };
 
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointComponent.setEditClickHandler(() => {
     replaceToEditPoint();
+    document.addEventListener('keydown', onEscapeKeyDown);
   });
 
-  editPointComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  editPointComponent.setformSubmitHandler(() => {
     replaceToPoint();
+    document.removeEventListener('keydown', onEscapeKeyDown);
+  });
+
+  editPointComponent.setEditClickHandler(() => {
+    replaceToPoint();
+    document.removeEventListener('keydown', onEscapeKeyDown);
   });
 
   render(listComponent, pointComponent, RenderPosition.BEFOREEND);
