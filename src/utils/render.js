@@ -36,7 +36,7 @@ const createElement = (template) => {
 
 const replace = (newElement, oldElement) => {
   if (newElement === null || oldElement === null) {
-    throw new Error('Cant\'t replace unexisting elements')
+    throw new Error('Cant\'t replace unexisting elements');
   }
 
   const newChild = newElement instanceof AbstractView ? newElement.element : newElement;
@@ -62,7 +62,7 @@ const remove = (component) => {
 
   component.element.remove();
   component.removeElement();
-}
+};
 
 export {
   render,

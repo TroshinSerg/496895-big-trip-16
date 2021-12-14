@@ -1,5 +1,5 @@
 import {isEscKeyCode} from './utils/common.js';
-import {render, replace, remove, RenderPosition} from './utils/render.js';
+import {render, replace, RenderPosition} from './utils/render.js';
 import MenuView from './view/menu-view.js';
 import FiltersView from './view/filters-view.js';
 import SortView from './view/sort-view.js';
@@ -62,7 +62,7 @@ const createTripInfoData = (items = []) => {
   };
 };
 
-const renderPoint = (eventsListComponent, point) => {
+const renderPoint = (listComponent, point) => {
   const pointComponent = new PointView(point);
   const editPointComponent = new EditPointView(point);
 
@@ -101,7 +101,7 @@ const renderPoint = (eventsListComponent, point) => {
     replaceToPoint();
   });
 
-  render(eventsListComponent, pointComponent, RenderPosition.BEFOREEND);
+  render(listComponent, pointComponent, RenderPosition.BEFOREEND);
 };
 
 //const renderList = (isDataAvailable) => {};
