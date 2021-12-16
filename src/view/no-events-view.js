@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from './abstract-view.js';
 
 const TripEventsMessageMap = {
   EVERYTHING: 'Click New Event to create your first point',
@@ -10,27 +10,15 @@ const createNoEventsTemplate = (filterName) => (
   `<p class="trip-events__msg">${TripEventsMessageMap[filterName.toUpperCase()]}</p>`
 );
 
-export default class NoEventsView {
-  #element = null;
+export default class NoEventsView extends AbstractView {
   #filterName = null;
 
   constructor(filterName) {
+    super();
     this.#filterName = filterName;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createNoEventsTemplate(this.#filterName);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

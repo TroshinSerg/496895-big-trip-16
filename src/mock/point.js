@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger} from '../utils.js';
+import {getRandomInteger} from '../utils/common.js';
 import {generateDestination, DESTINATIONS_NAMES} from './destination.js';
 import {generateOffer} from './offer.js';
 

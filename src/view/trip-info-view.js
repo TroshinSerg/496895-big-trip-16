@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 
 const generateEventPeriod = (startDate, endDate) => {
@@ -21,27 +21,15 @@ const createTripInfoTemplate = ({route, totalPrice, startDate, endDate}) => (
   </section>`
 );
 
-export default class TripInfoView {
-  #element = null;
+export default class TripInfoView extends AbstractView {
   #data = null;
 
   constructor(data) {
+    super();
     this.#data = data;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createTripInfoTemplate(this.#data);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
