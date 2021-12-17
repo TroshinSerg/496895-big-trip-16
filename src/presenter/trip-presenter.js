@@ -1,4 +1,6 @@
 import {isEscKeyCode} from '../utils/common.js';
+import PointView from '../view/point-view.js';
+import EditPointView from '../view/edit-point-view.js';
 import {render, replace, RenderPosition} from '../utils/render.js';
 import EventsListView from '../view/events-list-view';
 import MenuView from '../view/menu-view';
@@ -6,8 +8,7 @@ import FiltersView from '../view/filters-view';
 import SortView from '../view/sort-view';
 import TripInfoView from '../view/trip-info-view';
 import NoEventsView from '../view/no-events-view.js';
-import PointView from '../view/point-view.js';
-import EditPointView from '../view/edit-point-view.js';
+import PointPresenter from './point-presenter.js';
 //import AddPointView from '../view/add-point-view.js';
 
 export default class TripPresenter {
@@ -40,42 +41,9 @@ export default class TripPresenter {
     (this.#points.length ? this.#renderEventsBoard : this.#renderNoEventsMessage)();
   };
 
-  #renderPoint = (listComponent, point) => {
-    const pointComponent = new PointView(point);
-    const editPointComponent = new EditPointView(point);
-
-    const replaceToPoint = () => {
-      replace(pointComponent, editPointComponent);
-    };
-
-    const onEscapeKeyDown = (evt) => {
-      if (isEscKeyCode(evt.keyCode)) {
-        evt.preventDefault();
-        replaceToPoint();
-        document.removeEventListener('keydown', onEscapeKeyDown);
-      }
-    };
-
-    const replaceToEditPoint = () => {
-      replace(editPointComponent, pointComponent);
-    };
-
-    pointComponent.setEditClickHandler(() => {
-      replaceToEditPoint();
-      document.addEventListener('keydown', onEscapeKeyDown);
-    });
-
-    editPointComponent.setformSubmitHandler(() => {
-      replaceToPoint();
-      document.removeEventListener('keydown', onEscapeKeyDown);
-    });
-
-    editPointComponent.setEditClickHandler(() => {
-      replaceToPoint();
-      document.removeEventListener('keydown', onEscapeKeyDown);
-    });
-
-    render(listComponent, pointComponent, RenderPosition.BEFOREEND);
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter(this.#eventsListComponent);
+    pointPresenter.init(point);
   };
 
   #renderNoEventsMessage = () => {
@@ -114,7 +82,7 @@ export default class TripPresenter {
     render(this.#tripEventsContainer, this.#eventsListComponent, RenderPosition.BEFOREEND);
 
     this.#points.forEach((point) => {
-      this.#renderPoint(this.#eventsListComponent, point);
+      this.#renderPoint(point);
     });
 
     //render(eventsListComponent, new AddPointView(), RenderPosition.BEFOREEND);
