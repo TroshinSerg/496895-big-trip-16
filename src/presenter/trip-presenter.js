@@ -1,6 +1,4 @@
-import {isEscKeyCode} from '../utils/common.js';
-import PointView from '../view/point-view.js';
-import EditPointView from '../view/edit-point-view.js';
+import {updateItem} from '../utils/common.js';
 import {render, replace, RenderPosition} from '../utils/render.js';
 import EventsListView from '../view/events-list-view';
 import MenuView from '../view/menu-view';
@@ -24,6 +22,8 @@ export default class TripPresenter {
   #filtersComponent = new FiltersView();
   #sortComponent = new SortView();
 
+  #pointPresenter = new Map();
+
   #points = [];
 
   constructor(tripMainContainer, tripEventsContainer, menuContainer, filtersContainer) {
@@ -41,9 +41,15 @@ export default class TripPresenter {
     (this.#points.length ? this.#renderEventsBoard : this.#renderNoEventsMessage)();
   };
 
+  #onPointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#eventsListComponent);
+    const pointPresenter = new PointPresenter(this.#eventsListComponent, this.#onPointChange);
     pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
   };
 
   #renderNoEventsMessage = () => {
