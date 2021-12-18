@@ -81,7 +81,7 @@ export default class TripPresenter {
       }
     };
 
-    this.#filtersComponent.setFormChangeHandler((evt) => {
+    this.#filtersComponent.setOnFormChange((evt) => {
       changeNoEventsMessage(evt);
     });
   };

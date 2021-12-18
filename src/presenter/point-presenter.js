@@ -33,21 +33,21 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(this.#point);
     this.#editPointComponent = new EditPointView(this.#point);
 
-    this.#pointComponent.setEditClickHandler(() => {
+    this.#pointComponent.setOnEditClick(() => {
       this.#replaceToEditPoint();
       document.addEventListener('keydown', this.#onEscapeKeyDown);
     });
 
-    this.#pointComponent.setIsFavoriteClickHandler(() => {
+    this.#pointComponent.setOnIsFavoriteClick(() => {
       this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
     });
 
-    this.#editPointComponent.setFormSubmitHandler(() => {
+    this.#editPointComponent.setOnFormSubmit(() => {
       this.#replaceToPoint();
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
-    this.#editPointComponent.setEditClickHandler(() => {
+    this.#editPointComponent.setOnEditClick(() => {
       this.#replaceToPoint();
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
@@ -57,12 +57,10 @@ export default class PointPresenter {
       return;
     }
 
-    //if (this.#pointsListContainer.element.contains(prevPointComponent.element)) {
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    //if (this.#pointsListContainer.element.contains(prevEditPointComponent.element)) {
     if (this.#mode === Mode.EDITING) {
       replace(this.#editPointComponent, prevEditPointComponent);
     }
