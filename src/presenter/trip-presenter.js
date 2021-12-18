@@ -41,13 +41,17 @@ export default class TripPresenter {
     (this.#points.length ? this.#renderEventsBoard : this.#renderNoEventsMessage)();
   };
 
+  #onModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  };
+
   #onPointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#eventsListComponent, this.#onPointChange);
+    const pointPresenter = new PointPresenter(this.#eventsListComponent, this.#onPointChange, this.#onModeChange);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -80,6 +84,11 @@ export default class TripPresenter {
     this.#filtersComponent.setFormChangeHandler((evt) => {
       changeNoEventsMessage(evt);
     });
+  };
+
+  #clearEventsList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   };
 
   #renderEventsBoard = () => {
