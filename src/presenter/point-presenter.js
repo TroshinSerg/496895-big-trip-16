@@ -1,5 +1,5 @@
 import {isEscKeyCode} from '../utils/common.js';
-import {render, replace, RenderPosition} from '../utils/render.js';
+import {render, replace, remove, RenderPosition} from '../utils/render.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 
@@ -16,6 +16,10 @@ export default class PointPresenter {
 
   init = (point) => {
     this.#point = point;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevEditPointComponent = this.#editPointComponent;
+
     this.#pointComponent = new PointView(this.#point);
     this.#editPointComponent = new EditPointView(this.#point);
 
@@ -34,7 +38,26 @@ export default class PointPresenter {
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
-    render(this.#pointsListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
+    if (prevPointComponent === null || prevEditPointComponent === null) {
+      render(this.#pointsListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this.#pointsListContainer.element.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#pointsListContainer.element.contains(prevEditPointComponent.element)) {
+      replace(this.#editPointComponent, prevEditPointComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevEditPointComponent);
+  };
+
+  destroy = () => {
+    remove(this.#pointComponent);
+    remove(this.#editPointComponent);
   };
 
   #replaceToPoint = () => {
