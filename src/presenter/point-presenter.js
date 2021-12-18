@@ -5,13 +5,15 @@ import EditPointView from '../view/edit-point-view.js';
 
 export default class PointPresenter {
   #pointsListContainer = null;
+  #changeData = null;
   #pointComponent = null;
   #editPointComponent = null;
 
   #point = null;
 
-  constructor(pointsListContainer) {
+  constructor(pointsListContainer, changeData) {
     this.#pointsListContainer = pointsListContainer;
+    this.#changeData = changeData;
   }
 
   init = (point) => {
@@ -28,7 +30,11 @@ export default class PointPresenter {
       document.addEventListener('keydown', this.#onEscapeKeyDown);
     });
 
-    this.#editPointComponent.setformSubmitHandler(() => {
+    this.#pointComponent.setIsFavoriteClickHandler(() => {
+      this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    });
+
+    this.#editPointComponent.setFormSubmitHandler(() => {
       this.#replaceToPoint();
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
