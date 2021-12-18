@@ -13,7 +13,10 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+
 export {
   getRandomInteger,
-  isEscKeyCode
+  isEscKeyCode,
+  updateItem
 };
