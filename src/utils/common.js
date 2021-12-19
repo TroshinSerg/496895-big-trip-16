@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const KeyCode = {
   ESC: 27,
   ENTER: 13,
@@ -15,8 +17,27 @@ const getRandomInteger = (a = 0, b = 1) => {
 
 const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
+const sortByTime = (points) => {
+  points.sort((pointA, pointB) => {
+    const durationPointA = dayjs(pointA.dateTo).diff(pointA.dateFrom, 'minute');
+    const durationPointB = dayjs(pointB.dateTo).diff(pointB.dateFrom, 'minute');
+
+    return durationPointB - durationPointA;
+  });
+};
+
+const sortByPrice = (points) => {
+  points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
+};
+
+const SortPointsMethodMap = {
+  TIME: sortByTime,
+  PRICE: sortByPrice
+};
+
 export {
   getRandomInteger,
   isEscKeyCode,
-  updateItem
+  updateItem,
+  SortPointsMethodMap
 };
