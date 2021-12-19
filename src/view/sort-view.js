@@ -34,4 +34,20 @@ export default class SortView extends AbstractView {
   get template() {
     return createSortTemplate();
   }
+
+  setOnFormChange = (callback) => {
+    this._callback.formChange = callback;
+    this.element.addEventListener('change', this.#onFormChange);
+  };
+
+  #onFormChange = (evt) => {
+    evt.preventDefault();
+    const input = evt.target.closest('.trip-sort__input');
+
+    if (input === null || !input.hasAttribute('data-sort-type')) {
+      return;
+    }
+
+    this._callback.formChange(input.dataset.sortType);
+  }
 }
