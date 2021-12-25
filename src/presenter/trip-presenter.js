@@ -68,9 +68,6 @@ export default class TripPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-    // сортируем задачи
-    // очищаем список
-    // рендерим отсортированный список
 
     this.#sortPoints(sortType);
     this.#clearEventsList();
