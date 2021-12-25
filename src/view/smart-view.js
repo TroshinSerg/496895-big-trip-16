@@ -3,14 +3,14 @@ import AbstractView from './abstract-view.js';
 export default class SmartView extends AbstractView {
   _state = {};
 
-  updateData = (update, isJustDataUpdating) => {
+  updateState = (update, isJustStateUpdating) => {
     if (!update) {
       return;
     }
 
-    this._data = {...this._data, ...update};
+    this._state = {...this._state, ...update};
 
-    if (isJustDataUpdating) {
+    if (isJustStateUpdating) {
       return;
     }
 
