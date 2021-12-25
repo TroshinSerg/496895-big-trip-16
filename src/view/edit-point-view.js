@@ -1,7 +1,10 @@
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
+import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
+import {generateOffer} from '../mock/offer.js';
+
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
+//const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
 
 const createEditPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
@@ -24,7 +27,7 @@ const createEditPointTemplate = (point) => {
   if (additionalOffer.offers.length) {
     offersMarkup = additionalOffer.offers.map((offer) => (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.mod}-${id}" type="checkbox" name="event-offer-${offer.mod}"${offer.isChecked ? ' checked' : ''}>
+        <input class="event__offer-checkbox  visually-hidden" data-id="${offer.id}" id="event-offer-${offer.mod}-${id}" type="checkbox" name="event-offer-${offer.mod}"${offer.isChecked ? ' checked' : ''}>
         <label class="event__offer-label" for="event-offer-${offer.mod}-${id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -44,10 +47,6 @@ const createEditPointTemplate = (point) => {
 
   if (destination.description) {
     if (destination.pictures.length) {
-      /*destination.pictures.forEach((it) => {
-        imagesMarkup += `<img class="event__photo" src="${it.src}" alt="Event photo">`;
-      });*/
-
       imagesMarkup = destination.pictures.map((picture) => (
         `<img class="event__photo" src="${picture.src}" alt="Event photo">`
       )).join('');
@@ -127,12 +126,11 @@ const createEditPointTemplate = (point) => {
 };
 
 export default class EditPointView extends SmartView {
-  //#point = null;
-
   constructor(point) {
     super();
-    //this.#point = point;
     this._state = EditPointView.parseDataToState(point);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
@@ -156,47 +154,59 @@ export default class EditPointView extends SmartView {
   };
 
   #setInnerHandlers = () => {
-    // вешаем Внутренние обработчики
+    this.element.querySelector('form').addEventListener('change', this.#onFormChange);
   };
 
-  // методы-обработчики событий
+  #onFormChange = (evt) => {
+    const eventTypeInput = evt.target.closest('input[name="event-type"]');
+    const eventDestinationInput = evt.target.closest('input[name="event-destination"]');
+    const eventOfferCheckbox = evt.target.closest('.event__offer-checkbox');
+
+    if (eventTypeInput) {
+      const newEventType = eventTypeInput.value;
+
+      this.updateState({
+        type: newEventType,
+        additionalOffer: generateOffer(newEventType)
+      });
+    }
+
+    if (eventDestinationInput) {
+      this.updateState({
+        destination: {...generateDestination(0), name: eventDestinationInput.value}
+      });
+    }
+
+    if (eventOfferCheckbox) {
+      const eventOfferCheckboxId = parseInt(eventOfferCheckbox.dataset.id, 10);
+      const newOffers = this._state.additionalOffer.offers.slice();
+
+      const offer = newOffers.find((item) => item.id === eventOfferCheckboxId);
+      offer.isChecked = !offer.isChecked;
+
+      this.updateState({
+        additionalOffer: {...this._state.additionalOffer, offers: newOffers}
+      }, true);
+    }
+
+    //console.log(this._state)
+    //Почему выводится два раза при изменении инпутов "типа точки" и "направления"?
+  };
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(EditPointView.parseStateToData(this._state));
-  }
+  };
 
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
-  }
+  };
 
-  static parseDataToState = (data) => ({...data,
-    //isDueDate: data.dueDate !== null,
-    //isRepeating: isTaskRepeating(data.repeating),
-  });
+  static parseDataToState = (data) => ({...data});
 
   static parseStateToData = (state) => {
     const data = {...state};
-
-    if (!data.isDueDate) {
-      data.dueDate = null;
-    }
-
-    if (!data.isRepeating) {
-      data.repeating = {
-        mo: false,
-        tu: false,
-        we: false,
-        th: false,
-        fr: false,
-        sa: false,
-        su: false,
-      };
-    }
-
-    delete data.isDueDate;
-    delete data.isRepeating;
 
     return data;
   };
