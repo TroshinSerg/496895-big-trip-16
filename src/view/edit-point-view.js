@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
@@ -126,16 +126,23 @@ const createEditPointTemplate = (point) => {
   </li>`;
 };
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+export default class EditPointView extends SmartView {
+  //#point = null;
 
   constructor(point) {
     super();
-    this.#point = point;
+    //this.#point = point;
+    this._state = EditPointView.parseDataToState(point);
   }
 
   get template() {
-    return createEditPointTemplate(this.#point);
+    return createEditPointTemplate(this._state);
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setOnFormSubmit(this._callback.formSubmit);
+    this.setOnEditClick(this._callback.editClick);
   }
 
   setOnFormSubmit = (callback) => {
@@ -148,13 +155,49 @@ export default class EditPointView extends AbstractView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
   };
 
+  #setInnerHandlers = () => {
+    // вешаем Внутренние обработчики
+  };
+
+  // методы-обработчики событий
+
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EditPointView.parseStateToData(this._state));
   }
 
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
   }
+
+  static parseDataToState = (data) => ({...data,
+    //isDueDate: data.dueDate !== null,
+    //isRepeating: isTaskRepeating(data.repeating),
+  });
+
+  static parseStateToData = (state) => {
+    const data = {...state};
+
+    if (!data.isDueDate) {
+      data.dueDate = null;
+    }
+
+    if (!data.isRepeating) {
+      data.repeating = {
+        mo: false,
+        tu: false,
+        we: false,
+        th: false,
+        fr: false,
+        sa: false,
+        su: false,
+      };
+    }
+
+    delete data.isDueDate;
+    delete data.isRepeating;
+
+    return data;
+  };
 }
