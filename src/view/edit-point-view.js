@@ -137,6 +137,10 @@ export default class EditPointView extends SmartView {
     return createEditPointTemplate(this._state);
   }
 
+  reset = (point) => {
+    this.updateState(EditPointView.parseDataToState(point));
+  };
+
   restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setOnFormSubmit(this._callback.formSubmit);
@@ -188,9 +192,6 @@ export default class EditPointView extends SmartView {
         additionalOffer: {...this._state.additionalOffer, offers: newOffers}
       }, true);
     }
-
-    //console.log(this._state)
-    //Почему выводится два раза при изменении инпутов "типа точки" и "направления"?
   };
 
   #onFormSubmit = (evt) => {
