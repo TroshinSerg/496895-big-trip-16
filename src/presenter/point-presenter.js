@@ -81,6 +81,7 @@ export default class PointPresenter {
   };
 
   #replaceToPoint = () => {
+    this.#editPointComponent.reset(this.#point);
     replace(this.#pointComponent, this.#editPointComponent);
     this.#mode = Mode.DEFAULT;
   };
@@ -88,6 +89,7 @@ export default class PointPresenter {
   #onEscapeKeyDown = (evt) => {
     if (isEscKeyCode(evt.keyCode)) {
       evt.preventDefault();
+      this.#editPointComponent.reset(this.#point);
       this.#replaceToPoint();
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     }
