@@ -142,7 +142,7 @@ export default class TripPresenter {
     this.#renderEventsList();
     this.#renderPoints(this.#points);
 
-    //render(eventsListComponent, new AddPointView(), RenderPosition.BEFOREEND);
+    //render(this.#tripEventsContainer, new AddPointView(), RenderPosition.BEFOREEND);
   };
 
   #renderControls = () => {
