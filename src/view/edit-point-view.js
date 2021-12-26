@@ -1,7 +1,10 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
+import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
+import {generateOffer} from '../mock/offer.js';
+
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
+//const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
 
 const createEditPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
@@ -24,7 +27,7 @@ const createEditPointTemplate = (point) => {
   if (additionalOffer.offers.length) {
     offersMarkup = additionalOffer.offers.map((offer) => (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.mod}-${id}" type="checkbox" name="event-offer-${offer.mod}"${offer.isChecked ? ' checked' : ''}>
+        <input class="event__offer-checkbox  visually-hidden" data-id="${offer.id}" id="event-offer-${offer.mod}-${id}" type="checkbox" name="event-offer-${offer.mod}"${offer.isChecked ? ' checked' : ''}>
         <label class="event__offer-label" for="event-offer-${offer.mod}-${id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -44,10 +47,6 @@ const createEditPointTemplate = (point) => {
 
   if (destination.description) {
     if (destination.pictures.length) {
-      /*destination.pictures.forEach((it) => {
-        imagesMarkup += `<img class="event__photo" src="${it.src}" alt="Event photo">`;
-      });*/
-
       imagesMarkup = destination.pictures.map((picture) => (
         `<img class="event__photo" src="${picture.src}" alt="Event photo">`
       )).join('');
@@ -126,16 +125,26 @@ const createEditPointTemplate = (point) => {
   </li>`;
 };
 
-export default class EditPointView extends AbstractView {
-  #point = null;
-
+export default class EditPointView extends SmartView {
   constructor(point) {
     super();
-    this.#point = point;
+    this._state = EditPointView.parseDataToState(point);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createEditPointTemplate(this.#point);
+    return createEditPointTemplate(this._state);
+  }
+
+  reset = (point) => {
+    this.updateState(EditPointView.parseDataToState(point));
+  };
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setOnFormSubmit(this._callback.formSubmit);
+    this.setOnEditClick(this._callback.editClick);
   }
 
   setOnFormSubmit = (callback) => {
@@ -148,13 +157,58 @@ export default class EditPointView extends AbstractView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
   };
 
+  #setInnerHandlers = () => {
+    this.element.querySelector('form').addEventListener('change', this.#onFormChange);
+  };
+
+  #onFormChange = (evt) => {
+    const eventTypeInput = evt.target.closest('input[name="event-type"]');
+    const eventDestinationInput = evt.target.closest('input[name="event-destination"]');
+    const eventOfferCheckbox = evt.target.closest('.event__offer-checkbox');
+
+    if (eventTypeInput) {
+      const newEventType = eventTypeInput.value;
+
+      this.updateState({
+        type: newEventType,
+        additionalOffer: generateOffer(newEventType)
+      });
+    }
+
+    if (eventDestinationInput) {
+      this.updateState({
+        destination: {...generateDestination(0), name: eventDestinationInput.value}
+      });
+    }
+
+    if (eventOfferCheckbox) {
+      const eventOfferCheckboxId = parseInt(eventOfferCheckbox.dataset.id, 10);
+      const newOffers = this._state.additionalOffer.offers.slice();
+
+      const offer = newOffers.find((item) => item.id === eventOfferCheckboxId);
+      offer.isChecked = !offer.isChecked;
+
+      this.updateState({
+        additionalOffer: {...this._state.additionalOffer, offers: newOffers}
+      }, true);
+    }
+  };
+
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
-  }
+    this._callback.formSubmit(EditPointView.parseStateToData(this._state));
+  };
 
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
-  }
+  };
+
+  static parseDataToState = (data) => ({...data});
+
+  static parseStateToData = (state) => {
+    const data = {...state};
+
+    return data;
+  };
 }

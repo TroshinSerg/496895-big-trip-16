@@ -68,9 +68,6 @@ export default class TripPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-    // сортируем задачи
-    // очищаем список
-    // рендерим отсортированный список
 
     this.#sortPoints(sortType);
     this.#clearEventsList();
@@ -145,7 +142,7 @@ export default class TripPresenter {
     this.#renderEventsList();
     this.#renderPoints(this.#points);
 
-    //render(eventsListComponent, new AddPointView(), RenderPosition.BEFOREEND);
+    //render(this.#tripEventsContainer, new AddPointView(), RenderPosition.BEFOREEND);
   };
 
   #renderControls = () => {
