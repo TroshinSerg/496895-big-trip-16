@@ -184,7 +184,7 @@ export default class EditPointView extends SmartView {
         dateFormat: 'd/m/Y H:i',
         defaultDate: this._state[key],
         enableTime: true,
-        onChange: this.#onDateChange // На событие flatpickr передаём наш колбэк
+        onChange: this.#onDateChange
       }
       ));
     });
@@ -193,6 +193,7 @@ export default class EditPointView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('form').addEventListener('change', this.#onFormChange);
+    this.element.querySelector('input[name="event-price"]').addEventListener('input', this.#onPriceInput);
   };
 
   #onDateChange = ([userDate], formatedDate, instance) => {
@@ -234,6 +235,11 @@ export default class EditPointView extends SmartView {
     }
   };
 
+  #onPriceInput = (evt) => {
+    this.updateState({
+      basePrice: parseInt(evt.target.value, 10)
+    });
+  };
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
