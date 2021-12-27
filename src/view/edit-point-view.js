@@ -6,7 +6,6 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-//const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
 
 const createEditPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
@@ -148,8 +147,6 @@ export default class EditPointView extends SmartView {
     if (this.#datepicker.size) {
       this.#datepicker.forEach((datepicker) => datepicker.destroy());
       this.#datepicker.clear();
-
-      //console.log(this.#datepicker.set('key', 'value'))
     }
   };
 
