@@ -2,6 +2,8 @@ import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
 import {generateOffer} from '../mock/offer.js';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 //const DESTINATIONS_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
@@ -97,10 +99,10 @@ const createEditPointTemplate = (point) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-${id}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" data-type="dateFrom" id="event-start-time-${id}" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${id}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" data-type="dateTo" id="event-end-time-${id}" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -126,16 +128,30 @@ const createEditPointTemplate = (point) => {
 };
 
 export default class EditPointView extends SmartView {
+  #datepicker = new Map();
+
   constructor(point) {
     super();
     this._state = EditPointView.parseDataToState(point);
 
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
     return createEditPointTemplate(this._state);
   }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker.size) {
+      this.#datepicker.forEach((datepicker) => datepicker.destroy());
+      this.#datepicker.clear();
+
+      //console.log(this.#datepicker.set('key', 'value'))
+    }
+  };
 
   reset = (point) => {
     this.updateState(EditPointView.parseDataToState(point));
@@ -143,6 +159,7 @@ export default class EditPointView extends SmartView {
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatepicker();
     this.setOnFormSubmit(this._callback.formSubmit);
     this.setOnEditClick(this._callback.editClick);
   }
@@ -157,8 +174,31 @@ export default class EditPointView extends SmartView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
   };
 
+  #setDatepicker = () => {
+    const dateInputs = this.element.querySelectorAll('.event__input--time');
+
+    dateInputs.forEach((input) => {
+      const key = input.dataset.type;
+
+      this.#datepicker.set(key, flatpickr(input, {
+        dateFormat: 'd/m/Y H:i',
+        defaultDate: this._state[key],
+        enableTime: true,
+        onChange: this.#onDateChange // На событие flatpickr передаём наш колбэк
+      }
+      ));
+    });
+
+  }
+
   #setInnerHandlers = () => {
     this.element.querySelector('form').addEventListener('change', this.#onFormChange);
+  };
+
+  #onDateChange = ([userDate], formatedDate, instance) => {
+    this.updateState({
+      [instance.element.dataset.type]: userDate,
+    }, true);
   };
 
   #onFormChange = (evt) => {
@@ -193,6 +233,7 @@ export default class EditPointView extends SmartView {
       }, true);
     }
   };
+
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
