@@ -18,7 +18,7 @@ const getRandomInteger = (a = 0, b = 1) => {
 const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 const sortByTime = (points) => {
-  points.sort((pointA, pointB) => {
+  return points.sort((pointA, pointB) => {
     const durationPointA = dayjs(pointA.dateTo).diff(pointA.dateFrom, 'minute');
     const durationPointB = dayjs(pointB.dateTo).diff(pointB.dateFrom, 'minute');
 
@@ -27,7 +27,7 @@ const sortByTime = (points) => {
 };
 
 const sortByPrice = (points) => {
-  points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
+  return points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
 };
 
 const SortPointsMethodMap = {
