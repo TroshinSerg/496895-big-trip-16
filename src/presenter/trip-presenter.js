@@ -28,12 +28,18 @@ export default class TripPresenter {
 
   #points = [];
   #sourcedPoints = [];
+  #pointsModel = null;
 
-  constructor(tripMainContainer, tripEventsContainer, menuContainer, filtersContainer) {
+  constructor(tripMainContainer, tripEventsContainer, menuContainer, filtersContainer, pointsModel) {
     this.#tripMainContainer = tripMainContainer;
     this.#tripEventsContainer = tripEventsContainer;
     this.#menuContainer = menuContainer;
     this.#filtersContainer = filtersContainer;
+    this.#pointsModel = pointsModel;
+  }
+
+  get points() {
+    return this.#pointsModel.points;
   }
 
   init = (points) => {
