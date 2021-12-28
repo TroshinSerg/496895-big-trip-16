@@ -39,7 +39,11 @@ export default class TripPresenter {
   }
 
   get points() {
-    return this.#pointsModel.points;
+    if (this.#currentSortType === SortType.DEFAULT) {
+      return this.#pointsModel.points;
+    }
+
+    return SortPointsMethodMap[this.#currentSortType.toUpperCase()]([...this.#pointsModel.points]);
   }
 
   init = (points) => {
@@ -61,25 +65,25 @@ export default class TripPresenter {
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
-  #sortPoints = (sortType) => {
+  /*#sortPoints = (sortType) => {
     if (sortType === SortType.DEFAULT) {
       this.#points = [...this.#sourcedPoints];
       return;
     }
 
     SortPointsMethodMap[sortType.toUpperCase()](this.#points);
-  };
+  };*/
 
   #onSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
 
-    this.#sortPoints(sortType);
-    this.#clearEventsList();
-    this.#renderPoints(this.#points);
-
+    //this.#sortPoints(sortType);
     this.#currentSortType = sortType;
+    this.#clearEventsList();
+    this.#renderPoints(this.points);
+
   };
 
   #renderPoint = (point) => {
