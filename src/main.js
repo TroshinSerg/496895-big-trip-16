@@ -19,4 +19,4 @@ const pointsModel = new PointsModel();
 pointsModel.points = points;
 const tripPresenter = new TripPresenter(tripMainElement, tripEventsElement, navigationElement, filtersElement, pointsModel);
 
-tripPresenter.init(points);
+tripPresenter.init();
