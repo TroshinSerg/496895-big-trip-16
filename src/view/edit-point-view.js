@@ -235,7 +235,7 @@ export default class EditPointView extends SmartView {
   #onPriceInput = (evt) => {
     this.updateState({
       basePrice: parseInt(evt.target.value, 10)
-    });
+    }, true);
   };
 
   #onFormSubmit = (evt) => {
