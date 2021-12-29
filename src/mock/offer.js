@@ -18,7 +18,7 @@ const offersMap = {
     {title: 'Switch to comfort', mod: 'comfort'},
     {title: 'Choose seats', mod: 'seats'},
     {title: 'Add meal', mod: 'meal'},
-    {title: 'Switch to comfort', mod: 'comfort'}
+    {title: 'Switch to vip', mod: 'vip'}
   ],
   train: [
     {title: 'Upgrade to a reserved seat', mod: 'reserved-seat'},
