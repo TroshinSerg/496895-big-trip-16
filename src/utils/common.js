@@ -15,8 +15,6 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
-
 const sortByTime = (points) => {
   return points.sort((pointA, pointB) => {
     const durationPointA = dayjs(pointA.dateTo).diff(pointA.dateFrom, 'minute');
@@ -38,6 +36,5 @@ const SortPointsMethodMap = {
 export {
   getRandomInteger,
   isEscKeyCode,
-  updateItem,
   SortPointsMethodMap
 };
