@@ -159,6 +159,7 @@ export default class EditPointView extends SmartView {
     this.#setDatepicker();
     this.setOnFormSubmit(this._callback.formSubmit);
     this.setOnEditClick(this._callback.editClick);
+    this.setOnDeleteClick(this._callback.deleteClick);
   }
 
   setOnFormSubmit = (callback) => {
@@ -169,6 +170,11 @@ export default class EditPointView extends SmartView {
   setOnEditClick = (callback) => {
     this._callback.editClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
+  };
+
+  setOnDeleteClick = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteClick);
   };
 
   #setDatepicker = () => {
@@ -246,6 +252,11 @@ export default class EditPointView extends SmartView {
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
+  };
+
+  #onDeleteClick = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EditPointView.parseStateToData(this._state));
   };
 
   static parseDataToState = (data) => ({...data});
