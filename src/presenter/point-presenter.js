@@ -54,6 +54,11 @@ export default class PointPresenter {
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
+    this.#editPointComponent.setOnDeleteClick((point) => {
+      this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, point);
+      document.removeEventListener('keydown', this.#onEscapeKeyDown);
+    });
+
     if (prevPointComponent === null || prevEditPointComponent === null) {
       render(this.#pointsListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
       return;
