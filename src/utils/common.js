@@ -28,13 +28,23 @@ const sortByPrice = (points) => {
   return points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
 };
 
+const filterPast = (points) => points.filter((point) => Date.now() - Date.parse(point.dateTo) > 0);
+const filterFuture = (points) => points.filter((point) => Date.now() - Date.parse(point.dateFrom) < 0);
+
 const SortPointsMethodMap = {
   TIME: sortByTime,
   PRICE: sortByPrice
 };
 
+const FilterPointsMethodMap = {
+  EVERYTHING: (points) => points,
+  PAST: filterPast,
+  FUTURE: filterFuture
+};
+
 export {
   getRandomInteger,
   isEscKeyCode,
-  SortPointsMethodMap
+  SortPointsMethodMap,
+  FilterPointsMethodMap
 };
