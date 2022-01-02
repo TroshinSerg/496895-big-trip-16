@@ -227,9 +227,9 @@ export default class EditPointView extends SmartView {
 
     if (eventOfferCheckbox) {
       const eventOfferCheckboxId = parseInt(eventOfferCheckbox.dataset.id, 10);
-      const newOffers = this._state.additionalOffer.offers.map((offer) => ({...offer}));
+      const newOffers = this._state.additionalOffer.offers.map((offersItem) => ({...offersItem}));
 
-      const offer = newOffers.find((offer) => offer.id === eventOfferCheckboxId);
+      const offer = newOffers.find((offersItem) => offersItem.id === eventOfferCheckboxId);
       offer.isChecked = !(offer.isChecked);
 
       this.updateState({

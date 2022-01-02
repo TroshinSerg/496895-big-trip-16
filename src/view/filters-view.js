@@ -1,5 +1,4 @@
 import AbstractView from './abstract-view.js';
-import {FilterType} from '../utils/const.js';
 
 const createFilterItemTemplate = (filter, currentFilterType) => (
   `<div class="trip-filters__filter">
@@ -15,7 +14,7 @@ const createFiltersTemplate = (filterItems, currentFilterType) => {
     ${filterItemsString}
 
     <button class="visually-hidden" type="submit">Accept filter</button>
-  </form>`
+  </form>`;
 };
 
 export default class FiltersView extends AbstractView {
@@ -43,6 +42,6 @@ export default class FiltersView extends AbstractView {
     if (filterInput) {
       evt.preventDefault();
       this._callback.formChange(filterInput.value);
-    };
+    }
   }
 }

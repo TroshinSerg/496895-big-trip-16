@@ -15,18 +15,16 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const sortByTime = (points) => {
-  return points.sort((pointA, pointB) => {
+const sortByTime = (points) => (
+  points.sort((pointA, pointB) => {
     const durationPointA = dayjs(pointA.dateTo).diff(pointA.dateFrom, 'minute');
     const durationPointB = dayjs(pointB.dateTo).diff(pointB.dateFrom, 'minute');
 
     return durationPointB - durationPointA;
-  });
-};
+  })
+);
 
-const sortByPrice = (points) => {
-  return points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
-};
+const sortByPrice = (points) => points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
 
 const filterPast = (points) => points.filter((point) => Date.now() - Date.parse(point.dateTo) > 0);
 const filterFuture = (points) => points.filter((point) => Date.now() - Date.parse(point.dateFrom) < 0);

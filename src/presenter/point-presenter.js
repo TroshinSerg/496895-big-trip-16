@@ -43,8 +43,8 @@ export default class PointPresenter {
       this.#changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
     });
 
-    this.#editPointComponent.setOnFormSubmit((point) => {
-      this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, point);
+    this.#editPointComponent.setOnFormSubmit((pointsItem) => {
+      this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, pointsItem);
       this.#replaceToPoint();
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
@@ -54,8 +54,8 @@ export default class PointPresenter {
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
-    this.#editPointComponent.setOnDeleteClick((point) => {
-      this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, point);
+    this.#editPointComponent.setOnDeleteClick((pointsItem) => {
+      this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, pointsItem);
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
