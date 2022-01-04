@@ -7,6 +7,19 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
+const EMPTY_POINT = {
+  basePrice: 0,
+  dateFrom: dayjs().toDate(),
+  dateTo: dayjs().toDate(),
+  destination: generateDestination(0),
+  id: null,
+  isFavorite: false,
+  additionalOffer: generateOffer(TYPES[0]),
+  type: TYPES[0]
+};
+
+let isNewPoint = false;
+
 const createEditPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
 
@@ -114,9 +127,9 @@ const createEditPointTemplate = (point) => {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        ${isNewPoint ? '' : `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
-        </button>
+        </button>`}
       </header>
       <section class="event__details">
         ${offersMarkup}
@@ -129,9 +142,11 @@ const createEditPointTemplate = (point) => {
 export default class EditPointView extends SmartView {
   #datepicker = new Map();
 
-  constructor(point) {
+  constructor(point = EMPTY_POINT) {
     super();
     this._state = EditPointView.parseDataToState(point);
+
+    isNewPoint = point === EMPTY_POINT;
 
     this.#setInnerHandlers();
     this.#setDatepicker();

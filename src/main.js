@@ -11,6 +11,7 @@ const tripMainElement = document.querySelector('.trip-main');
 const tripEventsElement = document.querySelector('.trip-events');
 const navigationElement = tripMainElement.querySelector('.trip-controls__navigation');
 const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
+const eventAddBtn = tripMainElement.querySelector('.trip-main__event-add-btn');
 
 
 const POINTS_COUNT = 1;
@@ -34,3 +35,8 @@ render(navigationElement, menuComponent, RenderPosition.BEFOREEND);
 filterPresenter.init();
 tripPresenter.init();
 tripInfoPresenter.init();
+
+eventAddBtn.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createPoint(eventAddBtn);
+});
