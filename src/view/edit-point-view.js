@@ -256,6 +256,8 @@ export default class EditPointView extends SmartView {
   };
 
   #onPriceInput = (evt) => {
+    evt.target.value = evt.target.value.replace(/\D/g, '');
+
     this.updateState({
       basePrice: parseInt(evt.target.value, 10)
     }, true);
