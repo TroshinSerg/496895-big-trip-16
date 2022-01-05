@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
 import {generateOffer} from '../mock/offer.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
@@ -18,9 +19,9 @@ const EMPTY_POINT = {
   type: TYPES[0]
 };
 
-let isNewPoint = false;
+//let isNewPoint = false;
 
-const createEditPointTemplate = (point) => {
+const createEditPointTemplate = (point, isNewPoint) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
 
   let offersMarkup = '';
@@ -141,19 +142,20 @@ const createEditPointTemplate = (point) => {
 
 export default class EditPointView extends SmartView {
   #datepicker = new Map();
+  #isNewPoint = false;
 
   constructor(point = EMPTY_POINT) {
     super();
     this._state = EditPointView.parseDataToState(point);
 
-    isNewPoint = point === EMPTY_POINT;
+    this.#isNewPoint = point === EMPTY_POINT;
 
     this.#setInnerHandlers();
     this.#setDatepicker();
   }
 
   get template() {
-    return createEditPointTemplate(this._state);
+    return createEditPointTemplate(this._state, this.#isNewPoint);
   }
 
   removeElement = () => {
