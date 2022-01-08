@@ -3,10 +3,19 @@ import dayjs from 'dayjs';
 import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
 import {generateOffer} from '../mock/offer.js';
 import flatpickr from 'flatpickr';
-import he from 'he';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
+const DateType= {
+  DATEFROM: 'maxDate',
+  DATETO: 'minDate'
+};
+
+const ReverseDateType = {
+  DATEFROM: 'dateTo',
+  DATETO: 'dateFrom'
+};
 
 const EMPTY_POINT = {
   basePrice: 0,
@@ -19,7 +28,6 @@ const EMPTY_POINT = {
   type: TYPES[0]
 };
 
-//let isNewPoint = false;
 
 const createEditPointTemplate = (point, isNewPoint) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
@@ -142,13 +150,29 @@ const createEditPointTemplate = (point, isNewPoint) => {
 
 export default class EditPointView extends SmartView {
   #datepicker = new Map();
+  #input = new Map();
   #isNewPoint = false;
+  #ExtremeDate = {
+    MAXDATE: null,
+    MINDATE: null
+  };
+
+  #datepickerOptions = null;
 
   constructor(point = EMPTY_POINT) {
     super();
     this._state = EditPointView.parseDataToState(point);
 
     this.#isNewPoint = point === EMPTY_POINT;
+    this.#ExtremeDate.MAXDATE = point.dateTo;
+    this.#ExtremeDate.MINDATE = point.dateFrom;
+
+    this.#datepickerOptions = {
+      dateFormat: 'd/m/y H:i',
+      defaultDate: dayjs().toDate(),
+      enableTime: true,
+      onChange: this.#onDateChange
+    };
 
     this.#setInnerHandlers();
     this.#setDatepicker();
@@ -198,17 +222,13 @@ export default class EditPointView extends SmartView {
     const dateInputs = this.element.querySelectorAll('.event__input--time');
 
     dateInputs.forEach((input) => {
-      const key = input.dataset.type;
+      const key = input.dataset.type.toUpperCase();
+      const date = this.#ExtremeDate[DateType[key].toUpperCase()];
+      const datepicker = flatpickr(input, {...this.#datepickerOptions,  [DateType[key]]: date});
 
-      this.#datepicker.set(key, flatpickr(input, {
-        dateFormat: 'd/m/Y H:i',
-        defaultDate: this._state[key],
-        enableTime: true,
-        onChange: this.#onDateChange
-      }
-      ));
+      this.#datepicker.set(key, datepicker);
+      this.#input.set(key, input);
     });
-
   }
 
   #setInnerHandlers = () => {
@@ -220,6 +240,18 @@ export default class EditPointView extends SmartView {
     this.updateState({
       [instance.element.dataset.type]: userDate,
     }, true);
+
+    const key = instance.element.dataset.type;
+    const reverseKey = ReverseDateType[key.toUpperCase()];
+    const reverseKeyUpper = reverseKey.toUpperCase();
+    const extremeDateKey = DateType[reverseKeyUpper].toUpperCase();
+    this.#ExtremeDate[extremeDateKey] = userDate;
+
+    this.#datepicker.get(reverseKeyUpper).destroy();
+    this.#datepicker.delete(reverseKeyUpper);
+
+    const datepicker = flatpickr(this.#input.get(reverseKeyUpper), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[reverseKeyUpper]] : this.#ExtremeDate[extremeDateKey]});
+    this.#datepicker.set(reverseKeyUpper, datepicker);
   };
 
   #onFormChange = (evt) => {
