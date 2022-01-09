@@ -20,6 +20,7 @@ export default class TripInfoPresenter {
     if (points.length === 0) {
       if (this.#tripInfoComponent) {
         remove(this.#tripInfoComponent);
+        this.#tripInfoComponent = null;
       }
       return;
     }
