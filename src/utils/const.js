@@ -22,9 +22,23 @@ const FilterType = {
   FUTURE: 'future'
 };
 
+const Color = {
+  INVALID: 'red'
+};
+
+const ErrorMessage = {
+  PRICE: 'INVALID PRICE VALUE',
+  DESTINATION: 'INVALID DESTINATION VALUE'
+};
+
+const DEBOUNCE_DELAY = 100;
+
 export {
   FilterType,
   UpdateType,
   UserAction,
-  SortType
+  SortType,
+  Color,
+  ErrorMessage,
+  DEBOUNCE_DELAY
 };
