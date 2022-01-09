@@ -15,6 +15,33 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+const debounce = function(func, wait, immediate) {
+  let timeout;
+
+  return function executedFunction() {
+    const context = this;
+    const args = arguments;
+
+    const later = function() {
+      timeout = null;
+
+      if (!immediate) {
+        func.apply(context, args);
+      }
+    };
+
+    const callNow = immediate && !timeout;
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(later, wait);
+
+    if (callNow) {
+      func.apply(context, args);
+    }
+  };
+};
+
 const sortByTime = (points) => (
   points.sort((pointA, pointB) => {
     const durationPointA = dayjs(pointA.dateTo).diff(pointA.dateFrom, 'minute');
@@ -44,5 +71,6 @@ export {
   getRandomInteger,
   isEscKeyCode,
   SortPointsMethodMap,
-  FilterPointsMethodMap
+  FilterPointsMethodMap,
+  debounce
 };
