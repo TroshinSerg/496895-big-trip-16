@@ -2,8 +2,10 @@ import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
 import {generateOffer} from '../mock/offer.js';
+import {Color, ErrorMessage, DEBOUNCE_DELAY} from '../utils/const.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import { debounce } from '../utils/common.js';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
@@ -17,6 +19,38 @@ const ReverseDateType = {
   DATETO: 'dateFrom'
 };
 
+const domItems = [
+  {
+    name: 'FORM',
+    selector: 'form'
+  },
+  {
+    name: 'DESTINATION',
+    selector: '.event__input--destination'
+  },
+  {
+    name: 'DATES',
+    selector: '.event__input--time',
+    isList: true
+  },
+  {
+    name: 'PRICE',
+    selector: '.event__input--price'
+  },
+  {
+    name: 'SAVE',
+    selector: '.event__save-btn'
+  },
+  {
+    name: 'DELETE',
+    selector: '.event__reset-btn'
+  },
+  {
+    name: 'ROLLUP',
+    selector: '.event__rollup-btn'
+  }
+];
+
 const EMPTY_POINT = {
   basePrice: 0,
   dateFrom: dayjs().toDate(),
@@ -27,7 +61,6 @@ const EMPTY_POINT = {
   additionalOffer: generateOffer(TYPES[0]),
   type: TYPES[0]
 };
-
 
 const createEditPointTemplate = (point, isNewPoint) => {
   const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
@@ -150,7 +183,8 @@ const createEditPointTemplate = (point, isNewPoint) => {
 
 export default class EditPointView extends SmartView {
   #datepicker = new Map();
-  #input = new Map();
+  #dateInput = new Map();
+  #DOM = new Map();
   #isNewPoint = false;
   #ExtremeDate = {
     MAXDATE: null,
@@ -161,6 +195,7 @@ export default class EditPointView extends SmartView {
 
   constructor(point = EMPTY_POINT) {
     super();
+
     this._state = EditPointView.parseDataToState(point);
 
     this.#isNewPoint = point === EMPTY_POINT;
@@ -174,8 +209,8 @@ export default class EditPointView extends SmartView {
       onChange: this.#onDateChange
     };
 
+    this.#executeFunctions();
     this.#setInnerHandlers();
-    this.#setDatepicker();
   }
 
   get template() {
@@ -189,15 +224,28 @@ export default class EditPointView extends SmartView {
       this.#datepicker.forEach((datepicker) => datepicker.destroy());
       this.#datepicker.clear();
     }
+
+    this.#dateInput.clear();
+    this.#DOM.clear();
   };
 
   reset = (point) => {
     this.updateState(EditPointView.parseDataToState(point));
   };
 
-  restoreHandlers = () => {
-    this.#setInnerHandlers();
+  restore = () => {
+    this.#executeFunctions();
+    this.#restoreHandlers();
+  };
+
+  #executeFunctions = () => {
+    this.#setDom();
     this.#setDatepicker();
+    this.#formValidation();
+  };
+
+  #restoreHandlers = () => {
+    this.#setInnerHandlers();
     this.setOnFormSubmit(this._callback.formSubmit);
     this.setOnEditClick(this._callback.editClick);
     this.setOnDeleteClick(this._callback.deleteClick);
@@ -205,35 +253,39 @@ export default class EditPointView extends SmartView {
 
   setOnFormSubmit = (callback) => {
     this._callback.formSubmit = callback;
-    this.element.querySelector('form').addEventListener('submit', this.#onFormSubmit);
+    this.#DOM.get('FORM').addEventListener('submit', this.#onFormSubmit);
   };
 
   setOnEditClick = (callback) => {
+    if (this.#DOM.get('ROLLUP') === null) {
+      return;
+    }
+
     this._callback.editClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
+    this.#DOM.get('ROLLUP').addEventListener('click', this.#onEditClick);
   };
 
   setOnDeleteClick = (callback) => {
     this._callback.deleteClick = callback;
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteClick);
+    this.#DOM.get('DELETE').addEventListener('click', this.#onDeleteClick);
   };
 
   #setDatepicker = () => {
-    const dateInputs = this.element.querySelectorAll('.event__input--time');
+    this.#DOM.get('DATES').forEach((input) => {
+      const key = input.dataset.type;
+      const keyUpper = key.toUpperCase();
+      const date = this.#ExtremeDate[DateType[keyUpper].toUpperCase()];
+      const datepicker = flatpickr(input, {...this.#datepickerOptions, defaultDate: this._state[key], [DateType[keyUpper]]: date});
 
-    dateInputs.forEach((input) => {
-      const key = input.dataset.type.toUpperCase();
-      const date = this.#ExtremeDate[DateType[key].toUpperCase()];
-      const datepicker = flatpickr(input, {...this.#datepickerOptions,  [DateType[key]]: date});
-
-      this.#datepicker.set(key, datepicker);
-      this.#input.set(key, input);
+      this.#datepicker.set(keyUpper, datepicker);
+      this.#dateInput.set(keyUpper, input);
     });
-  }
+  };
 
   #setInnerHandlers = () => {
-    this.element.querySelector('form').addEventListener('change', this.#onFormChange);
-    this.element.querySelector('input[name="event-price"]').addEventListener('input', this.#onPriceInput);
+    this.#DOM.get('FORM').addEventListener('change', this.#onFormChange);
+    this.#DOM.get('PRICE').addEventListener('input', this.#onPriceInput);
+    this.#DOM.get('DESTINATION').addEventListener('input', this.#onDestinationInput);
   };
 
   #onDateChange = ([userDate], formatedDate, instance) => {
@@ -250,13 +302,12 @@ export default class EditPointView extends SmartView {
     this.#datepicker.get(reverseKeyUpper).destroy();
     this.#datepicker.delete(reverseKeyUpper);
 
-    const datepicker = flatpickr(this.#input.get(reverseKeyUpper), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[reverseKeyUpper]] : this.#ExtremeDate[extremeDateKey]});
+    const datepicker = flatpickr(this.#dateInput.get(reverseKeyUpper), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[reverseKeyUpper]] : this.#ExtremeDate[extremeDateKey]});
     this.#datepicker.set(reverseKeyUpper, datepicker);
   };
 
   #onFormChange = (evt) => {
     const eventTypeInput = evt.target.closest('input[name="event-type"]');
-    const eventDestinationInput = evt.target.closest('input[name="event-destination"]');
     const eventOfferCheckbox = evt.target.closest('.event__offer-checkbox');
 
     if (eventTypeInput) {
@@ -265,12 +316,6 @@ export default class EditPointView extends SmartView {
       this.updateState({
         type: newEventType,
         additionalOffer: generateOffer(newEventType)
-      });
-    }
-
-    if (eventDestinationInput) {
-      this.updateState({
-        destination: {...generateDestination(0), name: eventDestinationInput.value}
       });
     }
 
@@ -290,9 +335,21 @@ export default class EditPointView extends SmartView {
   #onPriceInput = (evt) => {
     evt.target.value = evt.target.value.replace(/\D/g, '');
 
+    this.#formValidation();
+
     this.updateState({
       basePrice: parseInt(evt.target.value, 10)
     }, true);
+  };
+
+  #onDestinationInput = (evt) => {
+    this.#formValidation({destinationCallback: () => {
+      if (this._state.destination.name !== evt.target.value) {
+        this.updateState({
+          destination: {...generateDestination(0), name: evt.target.value}
+        });
+      }
+    }});
   };
 
   #onFormSubmit = (evt) => {
@@ -308,6 +365,46 @@ export default class EditPointView extends SmartView {
   #onDeleteClick = (evt) => {
     evt.preventDefault();
     this._callback.deleteClick(EditPointView.parseStateToData(this._state));
+  };
+
+  #isDestinationValid = () => {
+    const value = this.#DOM.get('DESTINATION').value;
+    return value !== '' && DESTINATIONS_NAMES.includes(value);
+  };
+
+  #isPriceValid = () => {
+    const value = this.#DOM.get('PRICE').value;
+    return value !== '' && parseInt(value, 10) > 0;
+  };
+
+  #setValidityState = (element, message, isValid) => {
+    const parent = element.parentElement;
+
+    element.style.color = isValid ? '' : Color.INVALID;
+    parent.style.borderBottomColor = isValid ? '' : Color.INVALID;
+
+    element.setCustomValidity(isValid ? '' : message);
+  };
+
+  #formValidation = debounce((callback = {destinationCallback: null}) => {
+    const isDestinationValid = this.#isDestinationValid();
+    const isPriceValid = this.#isPriceValid();
+
+    this.#setValidityState(this.#DOM.get('DESTINATION'), ErrorMessage.DESTINATION, isDestinationValid);
+    this.#setValidityState(this.#DOM.get('PRICE'), ErrorMessage.PRICE, isPriceValid);
+
+    if (isDestinationValid && callback.destinationCallback) {
+      callback.destinationCallback();
+    }
+
+    this.#DOM.get('SAVE').disabled = !(isDestinationValid && isPriceValid);
+  }, DEBOUNCE_DELAY, false);
+
+
+  #setDom = () => {
+    domItems.forEach((domItem) => {
+      this.#DOM.set(domItem.name, this.element[domItem.isList ? 'querySelectorAll' : 'querySelector'](domItem.selector));
+    });
   };
 
   static parseDataToState = (data) => ({...data});
