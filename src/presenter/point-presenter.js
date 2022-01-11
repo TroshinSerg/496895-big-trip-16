@@ -2,6 +2,7 @@ import {isEscKeyCode} from '../utils/common.js';
 import {render, replace, remove, RenderPosition} from '../utils/render.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
+import {UserAction, UpdateType} from '../utils/const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -39,16 +40,22 @@ export default class PointPresenter {
     });
 
     this.#pointComponent.setOnIsFavoriteClick(() => {
-      this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+      this.#changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
     });
 
-    this.#editPointComponent.setOnFormSubmit(() => {
+    this.#editPointComponent.setOnFormSubmit((pointsItem) => {
+      this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, pointsItem);
       this.#replaceToPoint();
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
     this.#editPointComponent.setOnEditClick(() => {
       this.#replaceToPoint();
+      document.removeEventListener('keydown', this.#onEscapeKeyDown);
+    });
+
+    this.#editPointComponent.setOnDeleteClick((pointsItem) => {
+      this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, pointsItem);
       document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
@@ -98,6 +105,6 @@ export default class PointPresenter {
   #replaceToEditPoint = () => {
     replace(this.#editPointComponent, this.#pointComponent);
     this.#changeMode();
-    this.#mode  = Mode.EDITING;
+    this.#mode = Mode.EDITING;
   };
 }
