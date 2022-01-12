@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {HOURS_IN_DAY, MINUTES_IN_HOUR, NUMBER_OF_CHARACTERS, PAD_STRING} from './const.js';
 
 const KeyCode = {
   ESC: 27,
@@ -67,10 +68,23 @@ const FilterPointsMethodMap = {
   FUTURE: filterFuture
 };
 
+const getDurationString = (dateFrom, dateTo) => {
+  const durationInMinutes = dayjs(dateTo).diff(dateFrom, 'minute');
+  const durationInHours = durationInMinutes ? Math.floor(durationInMinutes / MINUTES_IN_HOUR) : 0;
+  const durationInDays = durationInHours ? Math.floor(durationInHours / HOURS_IN_DAY) : 0;
+
+  const durationDaysString = durationInDays ? `${String(durationInDays).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}D` : '';
+  const durationHoursString = durationInHours ? `${String(durationInHours % HOURS_IN_DAY).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}H` : '';
+  const durationMinutesString = durationInMinutes ? `${String(durationInMinutes % MINUTES_IN_HOUR).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}M` : '';
+
+  return `${durationDaysString} ${durationHoursString} ${durationMinutesString}`.trim();
+};
+
 export {
   getRandomInteger,
   isEscKeyCode,
   SortPointsMethodMap,
   FilterPointsMethodMap,
-  debounce
+  debounce,
+  getDurationString
 };
