@@ -68,8 +68,11 @@ const FilterPointsMethodMap = {
   FUTURE: filterFuture
 };
 
-const getDurationString = (dateFrom, dateTo) => {
-  const durationInMinutes = dayjs(dateTo).diff(dateFrom, 'minute');
+const getDurationInMinutes = (dateFrom, dateTo) => {
+  return dayjs(dateTo).diff(dateFrom, 'minute');
+};
+
+const getDurationString = (durationInMinutes) => {
   const durationInHours = durationInMinutes ? Math.floor(durationInMinutes / MINUTES_IN_HOUR) : 0;
   const durationInDays = durationInHours ? Math.floor(durationInHours / HOURS_IN_DAY) : 0;
 
@@ -86,5 +89,6 @@ export {
   SortPointsMethodMap,
   FilterPointsMethodMap,
   debounce,
-  getDurationString
+  getDurationString,
+  getDurationInMinutes
 };

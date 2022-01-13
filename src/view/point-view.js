@@ -1,6 +1,6 @@
 import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
-import {getDurationString} from '../utils/common.js';
+import {getDurationString, getDurationInMinutes} from '../utils/common.js';
 
 const createPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, additionalOffer, type} = point;
@@ -23,7 +23,8 @@ const createPointTemplate = (point) => {
       </ul>`;
   }
 
-  const durationString = getDurationString(dateFrom, dateTo);
+  const durationInMinutes = getDurationInMinutes(dateFrom, dateTo);
+  const durationString = getDurationString(durationInMinutes);
 
   return `<li class="trip-events__item">
     <div class="event">
