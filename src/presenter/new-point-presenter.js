@@ -43,6 +43,7 @@ export default class NewPointPresenter {
     if (this.#editPointComponent === null) {
       return;
     }
+
     this.#addPointButton.disabled = false;
     remove(this.#editPointComponent);
     this.#editPointComponent = null;

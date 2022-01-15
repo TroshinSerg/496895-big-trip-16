@@ -68,9 +68,7 @@ const FilterPointsMethodMap = {
   FUTURE: filterFuture
 };
 
-const getDurationInMinutes = (dateFrom, dateTo) => {
-  return dayjs(dateTo).diff(dateFrom, 'minute');
-};
+const getDurationInMinutes = (dateFrom, dateTo) => dayjs(dateTo).diff(dateFrom, 'minute');
 
 const getDurationString = (durationInMinutes) => {
   const durationInHours = durationInMinutes ? Math.floor(durationInMinutes / MINUTES_IN_HOUR) : 0;
