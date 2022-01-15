@@ -81,6 +81,8 @@ const getDurationString = (durationInMinutes) => {
   return `${durationDaysString} ${durationHoursString} ${durationMinutesString}`.trim();
 };
 
+const getRandomId = () => `new-${Math.random() * 10}`;
+
 export {
   getRandomInteger,
   isEscKeyCode,
@@ -88,5 +90,6 @@ export {
   FilterPointsMethodMap,
   debounce,
   getDurationString,
-  getDurationInMinutes
+  getDurationInMinutes,
+  getRandomId
 };
