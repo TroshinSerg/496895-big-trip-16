@@ -5,6 +5,7 @@ export default class TripInfoPresenter {
   #tripInfoContainer = null;
   #pointsModel = null;
   #tripInfoComponent = null;
+  #maxDestinationsNames = 3;
 
   constructor(tripInfoContainer, pointsModel) {
     this.#tripInfoContainer = tripInfoContainer;
@@ -66,7 +67,9 @@ export default class TripInfoPresenter {
       endDateInSeconds = Math.max(endDateInSeconds, new Date(point.dateTo).getTime());
     });
 
-    const route = [...destinationsNames].join(' — ');// доработать чтобы при четырех точках показывались две крайние и многоточие
+    const arrayOfDestinationsNames = [...destinationsNames];
+
+    const route = arrayOfDestinationsNames.length <= this.#maxDestinationsNames ? arrayOfDestinationsNames.join(' — ') : `${arrayOfDestinationsNames[0]} — ... — ${arrayOfDestinationsNames[arrayOfDestinationsNames.length - 1]}`;
     const startDate = new Date(startDateInSeconds);
     const endDate = new Date(endDateInSeconds);
 
