@@ -71,8 +71,8 @@ const FilterPointsMethodMap = {
 const getDurationInMinutes = (dateFrom, dateTo) => dayjs(dateTo).diff(dateFrom, 'minute');
 
 const getDurationString = (durationInMinutes) => {
-  const durationInHours = durationInMinutes ? Math.floor(durationInMinutes / MINUTES_IN_HOUR) : 0;
-  const durationInDays = durationInHours ? Math.floor(durationInHours / HOURS_IN_DAY) : 0;
+  const durationInHours = Math.floor(durationInMinutes / MINUTES_IN_HOUR);
+  const durationInDays = Math.floor(durationInHours / HOURS_IN_DAY);
 
   const durationDaysString = durationInDays ? `${String(durationInDays).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}D` : '';
   const durationHoursString = durationInHours ? `${String(durationInHours % HOURS_IN_DAY).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}H` : '';
