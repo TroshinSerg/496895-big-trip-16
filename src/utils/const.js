@@ -22,6 +22,8 @@ const FilterType = {
   FUTURE: 'future'
 };
 
+const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
 const Color = {
   INVALID: 'red'
 };
@@ -33,6 +35,16 @@ const ErrorMessage = {
 
 const DEBOUNCE_DELAY = 100;
 
+const MenuItem = {
+  TABLE: 'Table',
+  STATS: 'Stats'
+};
+
+const HOURS_IN_DAY = 24;
+const MINUTES_IN_HOUR = 60;
+const NUMBER_OF_CHARACTERS = 2;
+const PAD_STRING = '0';
+
 export {
   FilterType,
   UpdateType,
@@ -40,5 +52,11 @@ export {
   SortType,
   Color,
   ErrorMessage,
-  DEBOUNCE_DELAY
+  DEBOUNCE_DELAY,
+  MenuItem,
+  EVENT_TYPES,
+  HOURS_IN_DAY,
+  MINUTES_IN_HOUR,
+  NUMBER_OF_CHARACTERS,
+  PAD_STRING
 };

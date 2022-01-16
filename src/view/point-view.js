@@ -1,13 +1,10 @@
 import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
+import {getDurationString, getDurationInMinutes} from '../utils/common.js';
 
 const createPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, additionalOffer, type} = point;
   let offersMarkup = '';
-  const HOURS_IN_DAY = 24;
-  const MINUTES_IN_HOUR = 60;
-  const NUMBER_OF_CHARACTERS = 2;
-  const PAD_STRING = '0';
 
   const checkedOffers = additionalOffer.offers.filter((offer) => offer.isChecked);
 
@@ -26,15 +23,8 @@ const createPointTemplate = (point) => {
       </ul>`;
   }
 
-  const durationInMinutes = dayjs(dateTo).diff(dateFrom, 'minute');
-  const durationInHours = durationInMinutes ? Math.floor(durationInMinutes / MINUTES_IN_HOUR) : 0;
-  const durationInDays = durationInHours ? Math.floor(durationInHours / HOURS_IN_DAY) : 0;
-
-  const durationDaysString = durationInDays ? `${String(durationInDays).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}D` : '';
-  const durationHoursString = durationInHours ? `${String(durationInHours % HOURS_IN_DAY).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}H` : '';
-  const durationMinutesString = durationInMinutes ? `${String(durationInMinutes % MINUTES_IN_HOUR).padStart(NUMBER_OF_CHARACTERS, PAD_STRING)}M` : '';
-
-  const durationString = `${durationDaysString} ${durationHoursString} ${durationMinutesString}`.trim();
+  const durationInMinutes = getDurationInMinutes(dateFrom, dateTo);
+  const durationString = getDurationString(durationInMinutes);
 
   return `<li class="trip-events__item">
     <div class="event">

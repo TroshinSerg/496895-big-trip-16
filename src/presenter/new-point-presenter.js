@@ -1,4 +1,4 @@
-import {isEscKeyCode} from '../utils/common.js';
+import {isEscKeyCode, getRandomId} from '../utils/common.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import {UserAction, UpdateType} from '../utils/const.js';
@@ -26,7 +26,7 @@ export default class NewPointPresenter {
     this.#editPointComponent = new EditPointView();
 
     this.#editPointComponent.setOnFormSubmit((pointsItem) => {
-      this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, {...pointsItem, id: `new-${Math.random() * 10}`});
+      this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, {...pointsItem, id: getRandomId()});
       this.destroy();
     });
 
@@ -43,6 +43,7 @@ export default class NewPointPresenter {
     if (this.#editPointComponent === null) {
       return;
     }
+
     this.#addPointButton.disabled = false;
     remove(this.#editPointComponent);
     this.#editPointComponent = null;
