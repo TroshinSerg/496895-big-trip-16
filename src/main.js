@@ -8,6 +8,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
+import ApiService from './api-service.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const pageMainContainerElement = document.querySelector('.page-main .page-body__container');
@@ -18,12 +19,15 @@ const eventAddBtn = tripMainElement.querySelector('.trip-main__event-add-btn');
 const POINTS_COUNT = 15;
 let isStats = false;
 
+const AUTHORIZATION = 'Basic hS2fhthtgkghkyurf';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
+
 const points = [...Array(POINTS_COUNT)].map((it, index) => {
   const destinationId = index % DESTINATION_COUNT;
   return generatePoint(index + 1, destinationId);
 });
 
-const pointsModel = new PointsModel();
+const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 pointsModel.points = points;
 
