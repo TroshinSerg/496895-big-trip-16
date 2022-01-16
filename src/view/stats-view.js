@@ -152,14 +152,7 @@ export default class StatsView extends SmartView {
     });
   };
 
-  #getDataForChart = (points, setDataItem) => {
-    const data = [];
-    this.#eventTypes.forEach((type) => {
-      const dataItem = setDataItem(points, type);
-      data.push(dataItem);
-    });
-    return data;
-  };
+  #getDataForChart = (points, setDataItem) => this.#eventTypes.map((type) => setDataItem(points, type));
 
   #setArrayOfObjects = (labels, data) => labels.map((label, index) => ({label, data: data[index]}));
 
