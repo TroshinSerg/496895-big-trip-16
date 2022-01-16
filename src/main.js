@@ -29,7 +29,7 @@ const points = [...Array(POINTS_COUNT)].map((it, index) => {
 
 const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
-pointsModel.points = points;
+//pointsModel.points = points;
 
 const tripPresenter = new TripPresenter(pageMainContainerElement, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(filtersElement, filterModel);
@@ -68,6 +68,7 @@ const onMenuClick = (menuItem) => {
 menuComponent.setOnMenuClick(onMenuClick);
 changeStatusPresenters();
 tripInfoPresenter.init();
+pointsModel.init();
 
 eventAddBtn.addEventListener('click', (evt) => {
   evt.preventDefault();
