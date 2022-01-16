@@ -1,5 +1,4 @@
 import {MenuItem} from './utils/const.js';
-import {generatePoint, DESTINATION_COUNT} from './mock/point.js';
 import {remove, render, RenderPosition} from './utils/render.js';
 import MenuView from './view/menu-view.js';
 import StatsView from './view/stats-view.js';
@@ -16,20 +15,13 @@ const navigationElement = tripMainElement.querySelector('.trip-controls__navigat
 const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 const eventAddBtn = tripMainElement.querySelector('.trip-main__event-add-btn');
 
-const POINTS_COUNT = 15;
 let isStats = false;
 
 const AUTHORIZATION = 'Basic hS2fhthtgkghkyurf';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
-const points = [...Array(POINTS_COUNT)].map((it, index) => {
-  const destinationId = index % DESTINATION_COUNT;
-  return generatePoint(index + 1, destinationId);
-});
-
 const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
-//pointsModel.points = points;
 
 const tripPresenter = new TripPresenter(pageMainContainerElement, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(filtersElement, filterModel);
