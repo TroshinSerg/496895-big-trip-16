@@ -18,7 +18,7 @@ const CustomChartOptions = {
     setData: (points, type) => getfilteredPoints(points, type).reduce((duration, point) => duration + getDurationInMinutes(point.dateFrom, point.dateTo), 0),
     formatter: (val) => getDurationString(val)
   }
-}; //В данном случае можно ли так именовать перечисление?
+};
 
 const createStatsTemplate = () => (
   `<section class="statistics">
