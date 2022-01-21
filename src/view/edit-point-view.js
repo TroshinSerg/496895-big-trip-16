@@ -1,13 +1,9 @@
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
-import {generateDestination, DESTINATIONS_NAMES} from '../mock/destination.js';
-import {generateOffer} from '../mock/offer.js';
-import {Color, ErrorMessage, DEBOUNCE_DELAY} from '../utils/const.js';
+import {Color, ErrorMessage, DEBOUNCE_DELAY, EVENT_TYPES} from '../utils/const.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import { debounce } from '../utils/common.js';
-
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+import { debounce, getRandomId } from '../utils/common.js';
 
 const DateType= {
   DATEFROM: 'maxDate',
@@ -55,42 +51,43 @@ const EMPTY_POINT = {
   basePrice: 0,
   dateFrom: dayjs().toDate(),
   dateTo: dayjs().toDate(),
-  destination: generateDestination(0),
+  destination: {},
   id: null,
   isFavorite: false,
-  additionalOffer: generateOffer(TYPES[0]),
-  type: TYPES[0]
+  offers: [],
+  type: EVENT_TYPES[0]
 };
 
-const createEditPointTemplate = (point, isNewPoint) => {
-  const {basePrice, dateFrom, dateTo, destination, id, additionalOffer, type} = point;
+const createEditPointTemplate = (point, destinations, isNewPoint) => {
+  const {basePrice, dateFrom, dateTo, destination, id, offers, type} = point;
 
   let offersMarkup = '';
   let imagesMarkup = '';
   let destinationMarkup = '';
 
-  const eventTypeItemsMarkup = TYPES.map((eventType) => (
+  const eventTypeItemsMarkup = EVENT_TYPES.map((eventType) => (
     `<div class="event__type-item">
       <input id="event-type-${eventType}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
       <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-${id}">${eventType[0].toUpperCase() + eventType.slice(1)}</label>
     </div>`
   )).join('');
 
-  const destinationOptionsMarkup = DESTINATIONS_NAMES.map((name) => (
-    `<option value="${name}"></option>`
+  const destinationOptionsMarkup = destinations.map((destinationItem) => (
+    `<option value="${destinationItem.name}"></option>`
   )).join('');
 
-  if (additionalOffer.offers.length) {
-    offersMarkup = additionalOffer.offers.map((offer) => (
-      `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" data-id="${offer.id}" id="event-offer-${offer.mod}-${id}" type="checkbox" name="event-offer-${offer.mod}"${offer.isChecked ? ' checked' : ''}>
-        <label class="event__offer-label" for="event-offer-${offer.mod}-${id}">
+  if (offers.length) {
+    offersMarkup = offers.map((offer) => {
+      const idPart = getRandomId(type);
+      return `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" data-id="${offer.id}" id="event-offer-${idPart}-${id}" type="checkbox" name="event-offer-${type}"${offer.isChecked ? ' checked' : ''}>
+        <label class="event__offer-label" for="event-offer-${idPart}-${id}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </label>
-      </div>`
-    )).join('');
+      </div>`;
+    }).join('');
 
     offersMarkup = `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -186,6 +183,10 @@ export default class EditPointView extends SmartView {
   #dateInput = new Map();
   #DOM = new Map();
   #isNewPoint = false;
+  #point = null;
+  #allOffers = null;
+  #destinations = null;
+  #destinationsNames = null;
   #ExtremeDate = {
     MAXDATE: null,
     MINDATE: null
@@ -193,14 +194,21 @@ export default class EditPointView extends SmartView {
 
   #datepickerOptions = null;
 
-  constructor(point = EMPTY_POINT) {
+  constructor(point, allOffers, destinations) {
     super();
 
-    this._state = EditPointView.parseDataToState(point);
+    this.#allOffers = allOffers;
+    this.#destinations = destinations;
+    this.#destinationsNames = destinations.map((destination) => destination.name);
 
-    this.#isNewPoint = point === EMPTY_POINT;
-    this.#ExtremeDate.MAXDATE = point.dateTo;
-    this.#ExtremeDate.MINDATE = point.dateFrom;
+    this.#isNewPoint = point === null;
+    this.#point = this.#isNewPoint ? {...EMPTY_POINT, destination: this.#destinations[0]} : point;
+
+    this._state = this.#parseDataToState(this.#point);
+
+    this.#ExtremeDate.MAXDATE = this.#point.dateTo;
+    this.#ExtremeDate.MINDATE = this.#point.dateFrom;
+
 
     this.#datepickerOptions = {
       dateFormat: 'd/m/y H:i',
@@ -214,7 +222,7 @@ export default class EditPointView extends SmartView {
   }
 
   get template() {
-    return createEditPointTemplate(this._state, this.#isNewPoint);
+    return createEditPointTemplate(this._state, this.#destinations, this.#isNewPoint);
   }
 
   removeElement = () => {
@@ -230,7 +238,7 @@ export default class EditPointView extends SmartView {
   };
 
   reset = (point) => {
-    this.updateState(EditPointView.parseDataToState(point));
+    this.updateState(this.#parseDataToState(point));
   };
 
   restore = () => {
@@ -311,24 +319,19 @@ export default class EditPointView extends SmartView {
     const eventOfferCheckbox = evt.target.closest('.event__offer-checkbox');
 
     if (eventTypeInput) {
-      const newEventType = eventTypeInput.value;
-
-      this.updateState({
-        type: newEventType,
-        additionalOffer: generateOffer(newEventType)
-      });
+      const type = eventTypeInput.value;
+      this.updateState({type, offers: this.#getOffersForType(type)});
     }
 
     if (eventOfferCheckbox) {
       const eventOfferCheckboxId = parseInt(eventOfferCheckbox.dataset.id, 10);
-      const newOffers = this._state.additionalOffer.offers.map((offersItem) => ({...offersItem}));
 
-      const offer = newOffers.find((offersItem) => offersItem.id === eventOfferCheckboxId);
-      offer.isChecked = !(offer.isChecked);
+      const offers = this._state.offers.map((offer) => ({...offer}));
+      const changedOffer = offers.find((offer) => offer.id === eventOfferCheckboxId);
 
-      this.updateState({
-        additionalOffer: {...this._state.additionalOffer, offers: newOffers}
-      }, true);
+      changedOffer.isChecked = !changedOffer.isChecked;
+
+      this.updateState({offers}, true);
     }
   };
 
@@ -337,16 +340,14 @@ export default class EditPointView extends SmartView {
 
     this.#formValidation();
 
-    this.updateState({
-      basePrice: parseInt(evt.target.value, 10)
-    }, true);
+    this.updateState({basePrice: parseInt(evt.target.value, 10)}, true);
   };
 
   #onDestinationInput = (evt) => {
     this.#formValidation({destinationCallback: () => {
       if (this._state.destination.name !== evt.target.value) {
         this.updateState({
-          destination: {...generateDestination(0), name: evt.target.value}
+          destination: {...this.#destinations.filter((destination) => destination.name === evt.target.value)[0]}
         });
       }
     }});
@@ -354,7 +355,7 @@ export default class EditPointView extends SmartView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(EditPointView.parseStateToData(this._state));
+    this._callback.formSubmit(this.#parseStateToData(this._state));
   };
 
   #onEditClick = (evt) => {
@@ -364,12 +365,12 @@ export default class EditPointView extends SmartView {
 
   #onDeleteClick = (evt) => {
     evt.preventDefault();
-    this._callback.deleteClick(EditPointView.parseStateToData(this._state));
+    this._callback.deleteClick(this.#parseStateToData(this._state));
   };
 
   #isDestinationValid = () => {
     const value = this.#DOM.get('DESTINATION').value;
-    return value !== '' && DESTINATIONS_NAMES.includes(value);
+    return value !== '' && this.#destinationsNames.includes(value);
   };
 
   #isPriceValid = () => {
@@ -407,11 +408,22 @@ export default class EditPointView extends SmartView {
     });
   };
 
-  static parseDataToState = (data) => ({...data});
+  #getOffersForType = (type) => this.#allOffers.filter((offer) => offer.type === type)[0].offers.map((offer) => ({...offer}));
 
-  static parseStateToData = (state) => {
-    const data = {...state};
+  #setOffers = (pointOffers, pointType) => {
+    const offersForType = this.#getOffersForType(pointType);
+    const pointOffersIds = pointOffers.map((offer) => offer.id);
+    return offersForType.map((offer) => ({...offer, isChecked: pointOffersIds.includes(offer.id)}));
+  };
 
-    return data;
+  #parseDataToState = (data) => ({...data, offers: this.#setOffers(data.offers, data.type)});
+
+  #parseStateToData = (state) => {
+    const offers = state.offers.filter((offer) => offer.isChecked).map((offer) => {
+      delete offer.isChecked;
+      return {...offer};
+    });
+
+    return {...state, destination: {...state.destination}, offers};
   };
 }
