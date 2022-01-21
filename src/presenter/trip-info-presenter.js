@@ -52,9 +52,8 @@ export default class TripInfoPresenter {
     items.forEach((point) => {
       totalPrice += point.basePrice;
 
-      if (point.additionalOffer.offers.length) {
-        totalPrice += point.additionalOffer.offers
-          .filter((offer) => offer.isChecked)
+      if (point.offers.length) {
+        totalPrice += point.offers
           .reduce((totalOfferPrice, offer) => totalOfferPrice + offer.price, 0);
       }
 
