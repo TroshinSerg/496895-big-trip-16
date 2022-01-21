@@ -20,7 +20,9 @@ let isStats = false;
 const AUTHORIZATION = 'Basic hS2fhthtgkghkyurf';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
-const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
+
+const pointsModel = new PointsModel(apiService);
 const filterModel = new FilterModel();
 
 const tripPresenter = new TripPresenter(pageMainContainerElement, pointsModel, filterModel);
@@ -60,6 +62,7 @@ const onMenuClick = (menuItem) => {
 menuComponent.setOnMenuClick(onMenuClick);
 changeStatusPresenters();
 tripInfoPresenter.init();
+
 pointsModel.init();
 
 eventAddBtn.addEventListener('click', (evt) => {
