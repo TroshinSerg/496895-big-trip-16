@@ -3,6 +3,8 @@ import {UpdateType} from '../utils/const.js';
 
 export default class PointsModel extends AbstractObservable {
   #points = [];
+  #offers = [];
+  #destinations = [];
   #apiService = null;
 
   constructor(apiService) {
@@ -14,12 +16,24 @@ export default class PointsModel extends AbstractObservable {
     return this.#points;
   }
 
+  get offers() {
+    return this.#offers;
+  }
+
+  get destinations() {
+    return this.#destinations;
+  }
+
   init = async () => {
     try {
-      const points = await this.#apiService.points;
+      let points = null;
+      const data = await Promise.all([this.#apiService.points, this.#apiService.offers, this.#apiService.destinations]);
+      [points, this.#offers, this.#destinations] = [...data];
       this.#points = points.map(this.#adaptToClient);
     } catch(err) {
       this.#points = [];
+      this.#offers = [];
+      this.#destinations = [];
     }
 
     this._notify(UpdateType.INIT);
@@ -48,7 +62,6 @@ export default class PointsModel extends AbstractObservable {
       isFavorite: point['is_favorite']
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['is_favorite'];
