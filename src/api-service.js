@@ -3,6 +3,12 @@ const Method = {
   PUT: 'PUT',
 };
 
+const Url = {
+  POINTS: 'points',
+  OFFERS: 'offers',
+  DESTINATIONS: 'destinations'
+};
+
 export default class ApiService {
   #endPoint = null;
   #authorization = null;
@@ -13,7 +19,17 @@ export default class ApiService {
   }
 
   get points() {
-    return this.#load({url: 'points'})
+    return this.#load({url: Url.POINTS})
+      .then(ApiService.parseResponse);
+  }
+
+  get destinations() {
+    return this.#load({url: Url.DESTINATIONS})
+      .then(ApiService.parseResponse);
+  }
+
+  get offers() {
+    return this.#load({url: Url.OFFERS})
       .then(ApiService.parseResponse);
   }
 
@@ -28,7 +44,7 @@ export default class ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
-  }
+  };
 
   #load = async ({
     url,
@@ -49,23 +65,25 @@ export default class ApiService {
     } catch (err) {
       ApiService.catchError(err);
     }
-  }
+  };
 
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
       'base_price': point.basePrice,
       'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
       'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
-      'is_favorite': point.isFavorite
+      'is_favorite': point.isFavorite,
+      //'offers': point.additionalOffer
     };
 
     delete adaptedPoint.basePrice;
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
     delete adaptedPoint.isFavorite;
+    //delete adaptedPoint.additionalOffer;
 
     return adaptedPoint;
-  }
+  };
 
   static parseResponse = (response) => response.json();
 
