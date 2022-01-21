@@ -3,13 +3,11 @@ import dayjs from 'dayjs';
 import {getDurationString, getDurationInMinutes} from '../utils/common.js';
 
 const createPointTemplate = (point) => {
-  const {basePrice, dateFrom, dateTo, destination, isFavorite, additionalOffer, type} = point;
+  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
   let offersMarkup = '';
 
-  const checkedOffers = additionalOffer.offers.filter((offer) => offer.isChecked);
-
-  if (checkedOffers.length) {
-    offersMarkup = checkedOffers.map((offer) => (
+  if (offers.length) {
+    offersMarkup = offers.map((offer) => (
       `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
