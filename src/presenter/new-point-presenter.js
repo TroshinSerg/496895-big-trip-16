@@ -16,14 +16,14 @@ export default class NewPointPresenter {
     this.#onDeleteClick = onDeleteClick;
   }
 
-  init = (button) => {
+  init = (button, offers, destinations) => {
     if (this.#editPointComponent !== null) {
       return;
     }
 
     this.#addPointButton = button;
     this.#addPointButton.disabled = true;
-    this.#editPointComponent = new EditPointView();
+    this.#editPointComponent = new EditPointView(null, offers, destinations);
 
     this.#editPointComponent.setOnFormSubmit((pointsItem) => {
       this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, {...pointsItem, id: getRandomId()});
