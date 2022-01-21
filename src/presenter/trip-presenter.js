@@ -12,7 +12,7 @@ import {SortType, UpdateType, UserAction, FilterType} from '../utils/const.js';
 export default class TripPresenter {
   #pageMainContainer = null;
   #sortComponent = null;
-  #pointsModel = null;
+  #tripModel = null;
   #filterModel = null;
   #tripEventsComponent = new TripEventsView();
   #eventsListComponent = new EventsListView();
@@ -25,9 +25,9 @@ export default class TripPresenter {
   #currentFilterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(pageMainContainer, pointsModel, filterModel) {
+  constructor(pageMainContainer, tripModel, filterModel) {
     this.#pageMainContainer = pageMainContainer;
-    this.#pointsModel = pointsModel;
+    this.#tripModel = tripModel;
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter(this.#eventsListComponent, this.#onViewAction, this.#onNewPointDeleteClick);
@@ -36,7 +36,7 @@ export default class TripPresenter {
   get points() {
     this.#currentFilterType = this.#filterModel.filter;
 
-    const points = [...this.#pointsModel.points];
+    const points = [...this.#tripModel.points];
     const filteredPoints = FilterPointsMethodMap[this.#currentFilterType.toUpperCase()](points);
 
     if (this.#currentSortType === SortType.DEFAULT) {
@@ -47,15 +47,15 @@ export default class TripPresenter {
   }
 
   get offers() {
-    return this.#pointsModel.offers;
+    return this.#tripModel.offers;
   }
 
   get destinations() {
-    return this.#pointsModel.destinations;
+    return this.#tripModel.destinations;
   }
 
   init = () => {
-    this.#pointsModel.addObserver(this.#onModelEvent);
+    this.#tripModel.addObserver(this.#onModelEvent);
     this.#filterModel.addObserver(this.#onModelEvent);
 
     this.#renderEventsBoard(this.points);
@@ -64,7 +64,7 @@ export default class TripPresenter {
   destroy = () => {
     this.#clearEventsBoard({resetSortType: true});
 
-    this.#pointsModel.removeObserver(this.#onModelEvent);
+    this.#tripModel.removeObserver(this.#onModelEvent);
     this.#filterModel.removeObserver(this.#onModelEvent);
   };
 
@@ -88,13 +88,13 @@ export default class TripPresenter {
   #onViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#tripModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#tripModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#tripModel.deletePoint(updateType, update);
         break;
     }
   }

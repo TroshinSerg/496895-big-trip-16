@@ -1,7 +1,7 @@
 import AbstractObservable from './abstract-observable.js';
 import {UpdateType} from '../utils/const.js';
 
-export default class PointsModel extends AbstractObservable {
+export default class TripModel extends AbstractObservable {
   #points = [];
   #offers = [];
   #destinations = [];
