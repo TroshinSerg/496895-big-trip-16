@@ -1,13 +1,13 @@
 import {MenuItem} from './utils/const.js';
-import {generatePoint, DESTINATION_COUNT} from './mock/point.js';
 import {remove, render, RenderPosition} from './utils/render.js';
 import MenuView from './view/menu-view.js';
 import StatsView from './view/stats-view.js';
 import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
-import PointsModel from './model/points-model.js';
+import TripModel from './model/trip-model.js';
 import FilterModel from './model/filter-model.js';
+import ApiService from './api-service.js';
 
 const tripMainElement = document.querySelector('.trip-main');
 const pageMainContainerElement = document.querySelector('.page-main .page-body__container');
@@ -15,21 +15,19 @@ const navigationElement = tripMainElement.querySelector('.trip-controls__navigat
 const filtersElement = tripMainElement.querySelector('.trip-controls__filters');
 const eventAddBtn = tripMainElement.querySelector('.trip-main__event-add-btn');
 
-const POINTS_COUNT = 15;
 let isStats = false;
 
-const points = [...Array(POINTS_COUNT)].map((it, index) => {
-  const destinationId = index % DESTINATION_COUNT;
-  return generatePoint(index + 1, destinationId);
-});
+const AUTHORIZATION = 'Basic hS2fhthtgkghkyurf';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
-const pointsModel = new PointsModel();
+const apiService = new ApiService(END_POINT, AUTHORIZATION);
+
+const tripModel = new TripModel(apiService);
 const filterModel = new FilterModel();
-pointsModel.points = points;
 
-const tripPresenter = new TripPresenter(pageMainContainerElement, pointsModel, filterModel);
+const tripPresenter = new TripPresenter(pageMainContainerElement, tripModel, filterModel);
 const filterPresenter = new FilterPresenter(filtersElement, filterModel);
-const tripInfoPresenter = new TripInfoPresenter(tripMainElement, pointsModel);
+const tripInfoPresenter = new TripInfoPresenter(tripMainElement, tripModel);
 
 const changeStatusPresenters = (options = {destroy: false}) => {
   const method = options.destroy ? 'destroy' : 'init';
@@ -53,7 +51,7 @@ const onMenuClick = (menuItem) => {
       showEventsTable();
       break;
     case MenuItem.STATS:
-      statsComponent = new StatsView(pointsModel.points);
+      statsComponent = new StatsView(tripModel.points);
       changeStatusPresenters({destroy: true});
       render(pageMainContainerElement, statsComponent, RenderPosition.BEFOREEND);
       isStats = true;
@@ -64,6 +62,8 @@ const onMenuClick = (menuItem) => {
 menuComponent.setOnMenuClick(onMenuClick);
 changeStatusPresenters();
 tripInfoPresenter.init();
+
+tripModel.init();
 
 eventAddBtn.addEventListener('click', (evt) => {
   evt.preventDefault();

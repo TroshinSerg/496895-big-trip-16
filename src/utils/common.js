@@ -81,7 +81,7 @@ const getDurationString = (durationInMinutes) => {
   return `${durationDaysString} ${durationHoursString} ${durationMinutesString}`.trim();
 };
 
-const getRandomId = () => `new-${Math.random() * 10}`;
+const getRandomId = (prefix = 'new') => `${prefix}-${Math.random() * 10}`;
 
 export {
   getRandomInteger,

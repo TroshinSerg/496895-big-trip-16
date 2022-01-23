@@ -3,19 +3,19 @@ import {render, RenderPosition, replace, remove} from '../utils/render.js';
 
 export default class TripInfoPresenter {
   #tripInfoContainer = null;
-  #pointsModel = null;
+  #tripModel = null;
   #tripInfoComponent = null;
   #maxDestinationsNames = 3;
 
-  constructor(tripInfoContainer, pointsModel) {
+  constructor(tripInfoContainer, tripModel) {
     this.#tripInfoContainer = tripInfoContainer;
-    this.#pointsModel = pointsModel;
+    this.#tripModel = tripModel;
 
-    this.#pointsModel.addObserver(this.#onModelEvent);
+    this.#tripModel.addObserver(this.#onModelEvent);
   }
 
   init = () => {
-    const points = this.#pointsModel.points;
+    const points = this.#tripModel.points;
     const prevTripInfoComponent = this.#tripInfoComponent;
 
     if (points.length === 0) {
@@ -52,9 +52,8 @@ export default class TripInfoPresenter {
     items.forEach((point) => {
       totalPrice += point.basePrice;
 
-      if (point.additionalOffer.offers.length) {
-        totalPrice += point.additionalOffer.offers
-          .filter((offer) => offer.isChecked)
+      if (point.offers.length) {
+        totalPrice += point.offers
           .reduce((totalOfferPrice, offer) => totalOfferPrice + offer.price, 0);
       }
 
