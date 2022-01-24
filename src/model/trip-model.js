@@ -39,9 +39,15 @@ export default class TripModel extends AbstractObservable {
     this._notify(UpdateType.INIT);
   }
 
-  updatePoint = (updateType, update) => {
-    this.#points = this.#points.map((point) => point.id === update.id ? update : point);
-    this._notify(updateType, update);
+  updatePoint = async (updateType, update) => {
+     try {
+      const response = await this.#apiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = this.#points.map((point) => point.id === update.id ? update : point);
+      this._notify(updateType, updatedPoint);
+    } catch(err) {
+      throw new Error('Can\'t update point');
+    }
   }
 
   addPoint = (updateType, update) => {

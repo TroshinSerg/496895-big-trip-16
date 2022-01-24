@@ -33,7 +33,7 @@ export default class ApiService {
       .then(ApiService.parseResponse);
   }
 
-  updateTask = async (point) => {
+  updatePoint = async (point) => {
     const response = await this.#load({
       url: `points/${point.id}`,
       method: Method.PUT,
