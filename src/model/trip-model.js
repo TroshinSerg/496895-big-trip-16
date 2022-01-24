@@ -50,14 +50,25 @@ export default class TripModel extends AbstractObservable {
     }
   }
 
-  addPoint = (updateType, update) => {
-    this.#points = [update, ...this.#points];
-    this._notify(updateType, update);
+  addPoint = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, newPoint);
+    } catch(err) {
+      throw new Error('Can\'t add point');
+    }
   }
 
-  deletePoint = (updateType, update) => {
-    this.#points = this.#points.filter((point) => point.id !== update.id);
-    this._notify(updateType);
+  deletePoint = async (updateType, update) => {
+    try {
+      await this.#apiService.deletePoint(update);
+      this.#points = this.#points.filter((point) => point.id !== update.id);
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete unexisting point');
+    }
   }
 
   #adaptToClient = (point) => {

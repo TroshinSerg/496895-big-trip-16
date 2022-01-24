@@ -26,7 +26,7 @@ export default class NewPointPresenter {
     this.#editPointComponent = new EditPointView(null, offers, destinations);
 
     this.#editPointComponent.setOnFormSubmit((pointsItem) => {
-      this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, {...pointsItem, id: getRandomId()});
+      this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, pointsItem);
       this.destroy();
     });
 
