@@ -53,11 +53,12 @@ const sortByTime = (points) => (
 );
 
 const sortByPrice = (points) => points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
-
+const sortByDate = (points) => points.sort((pointA, pointB) => Date.parse(pointA.dateFrom) - Date.parse(pointB.dateFrom));
 const filterPast = (points) => points.filter((point) => Date.now() - Date.parse(point.dateTo) > 0);
 const filterFuture = (points) => points.filter((point) => Date.now() - Date.parse(point.dateFrom) < 0);
 
 const SortPointsMethodMap = {
+  DEFAULT: sortByDate,
   TIME: sortByTime,
   PRICE: sortByPrice
 };

@@ -39,10 +39,6 @@ export default class TripPresenter {
     const points = [...this.#tripModel.points];
     const filteredPoints = FilterPointsMethodMap[this.#currentFilterType.toUpperCase()](points);
 
-    if (this.#currentSortType === SortType.DEFAULT) {
-      return filteredPoints;
-    }
-
     return ( SortPointsMethodMap[this.#currentSortType.toUpperCase()](filteredPoints) );
   }
 
