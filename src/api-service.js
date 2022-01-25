@@ -50,7 +50,7 @@ export default class ApiService {
     return parsedResponse;
   };
 
-   addPoint = async (point) => {
+  addPoint = async (point) => {
     const response = await this.#load({
       url: Url.POINTS,
       method: Method.POST,
