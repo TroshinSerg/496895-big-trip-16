@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 const Url = {
@@ -8,6 +10,8 @@ const Url = {
   OFFERS: 'offers',
   DESTINATIONS: 'destinations'
 };
+
+const HEADER_INIT_OBJECT = {'Content-Type': 'application/json'};
 
 export default class ApiService {
   #endPoint = null;
@@ -33,17 +37,39 @@ export default class ApiService {
       .then(ApiService.parseResponse);
   }
 
-  updateTask = async (point) => {
+  updatePoint = async (point) => {
     const response = await this.#load({
-      url: `points/${point.id}`,
+      url: `${Url.POINTS}/${point.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: new Headers(HEADER_INIT_OBJECT)
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  };
+
+  addPoint = async (point) => {
+    const response = await this.#load({
+      url: Url.POINTS,
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers(HEADER_INIT_OBJECT)
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  deletePoint = async (point) => {
+    const response = await this.#load({
+      url: `${Url.POINTS}/${point.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   };
 
   #load = async ({

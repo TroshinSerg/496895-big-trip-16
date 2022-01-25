@@ -39,19 +39,36 @@ export default class TripModel extends AbstractObservable {
     this._notify(UpdateType.INIT);
   }
 
-  updatePoint = (updateType, update) => {
-    this.#points = this.#points.map((point) => point.id === update.id ? update : point);
-    this._notify(updateType, update);
+  updatePoint = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = this.#points.map((point) => point.id === update.id ? update : point);
+      this._notify(updateType, updatedPoint);
+    } catch(err) {
+      throw new Error('Can\'t update point');
+    }
   }
 
-  addPoint = (updateType, update) => {
-    this.#points = [update, ...this.#points];
-    this._notify(updateType, update);
+  addPoint = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, newPoint);
+    } catch(err) {
+      throw new Error('Can\'t add point');
+    }
   }
 
-  deletePoint = (updateType, update) => {
-    this.#points = this.#points.filter((point) => point.id !== update.id);
-    this._notify(updateType);
+  deletePoint = async (updateType, update) => {
+    try {
+      await this.#apiService.deletePoint(update);
+      this.#points = this.#points.filter((point) => point.id !== update.id);
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete unexisting point');
+    }
   }
 
   #adaptToClient = (point) => {
