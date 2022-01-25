@@ -3,6 +3,7 @@ import {render, replace, remove, RenderPosition} from '../utils/render.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import {UserAction, UpdateType} from '../utils/const.js';
+import {State} from '../utils/const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -49,8 +50,6 @@ export default class PointPresenter {
 
     this.#editPointComponent.setOnFormSubmit((pointsItem) => {
       this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, pointsItem);
-      this.#replaceToPoint();
-      document.removeEventListener('keydown', this.#onEscapeKeyDown);
     });
 
     this.#editPointComponent.setOnEditClick(() => {
@@ -73,7 +72,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#editPointComponent, prevEditPointComponent);
+      replace(this.#pointComponent, prevEditPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -91,10 +91,40 @@ export default class PointPresenter {
     }
   };
 
+  setViewState = (state) => {
+    const resetFormState = () => {
+      this.#editPointComponent.updateState({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this.#editPointComponent.updateState({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#editPointComponent.updateState({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this.#pointComponent.shake();
+        this.#editPointComponent.shake(resetFormState);
+        break;
+    }
+  };
+
   #replaceToPoint = () => {
     this.#editPointComponent.reset(this.#point);
     replace(this.#pointComponent, this.#editPointComponent);
     this.#mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this.#onEscapeKeyDown);
   };
 
   #onEscapeKeyDown = (evt) => {

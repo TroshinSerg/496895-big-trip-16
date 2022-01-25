@@ -25,6 +25,12 @@ const FilterType = {
 
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING'
+};
+
 const Color = {
   INVALID: 'red'
 };
@@ -59,5 +65,6 @@ export {
   HOURS_IN_DAY,
   MINUTES_IN_HOUR,
   NUMBER_OF_CHARACTERS,
-  PAD_STRING
+  PAD_STRING,
+  State
 };

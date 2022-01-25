@@ -1,4 +1,4 @@
-import {isEscKeyCode, getRandomId} from '../utils/common.js';
+import {isEscKeyCode} from '../utils/common.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import {UserAction, UpdateType} from '../utils/const.js';
@@ -27,7 +27,6 @@ export default class NewPointPresenter {
 
     this.#editPointComponent.setOnFormSubmit((pointsItem) => {
       this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, pointsItem);
-      this.destroy();
     });
 
     this.#editPointComponent.setOnDeleteClick(() => {
@@ -50,6 +49,24 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#onEscapeKeyDown);
   };
 
+  setViewSavingState = () => {
+    this.#editPointComponent.updateState({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAbortingState = () => {
+    const resetFormState = () => {
+      this.#editPointComponent.updateState({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointComponent.shake(resetFormState);
+  };
 
   #onEscapeKeyDown = (evt) => {
     if (isEscKeyCode(evt.keyCode)) {
