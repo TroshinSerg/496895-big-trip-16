@@ -39,7 +39,7 @@ export default class TripPresenter {
     const points = [...this.#tripModel.points];
     const filteredPoints = FilterPointsMethodMap[this.#currentFilterType.toUpperCase()](points);
 
-    return ( SortPointsMethodMap[this.#currentSortType.toUpperCase()](filteredPoints) );
+    return (SortPointsMethodMap[this.#currentSortType.toUpperCase()](filteredPoints));
   }
 
   get offers() {
@@ -66,13 +66,14 @@ export default class TripPresenter {
 
   createPoint = (button) => {
     this.#currentSortType = SortType.DEFAULT;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    if (this.#currentFilterType !== FilterType.EVERYTHING) {
+      this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    }
 
     if (this.#noEventsComponent) {
       remove(this.#noEventsComponent);
     }
 
-    this.#renderEventsList();
     this.#newPointPresenter.init(button, this.offers, this.destinations);
   };
 
