@@ -26,7 +26,7 @@ const tripModel = new TripModel(apiService);
 const filterModel = new FilterModel();
 
 const tripPresenter = new TripPresenter(pageMainContainerElement, tripModel, filterModel);
-const filterPresenter = new FilterPresenter(filtersElement, filterModel);
+const filterPresenter = new FilterPresenter(filtersElement, filterModel, tripModel);
 const tripInfoPresenter = new TripInfoPresenter(tripMainElement, tripModel);
 
 const changeStatusPresenters = (options = {destroy: false}) => {
