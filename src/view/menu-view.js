@@ -30,9 +30,12 @@ export default class MenuView extends AbstractView {
 
   #onMenuClick = (evt) => {
     evt.preventDefault();
-    const menuItemId = evt.target.dataset.id;
+    const menuBtn = evt.target.closest('.trip-tabs__btn');
 
-    this.setActiveMenuItem(menuItemId);
-    this._callback.menuClick(menuItemId);
+    if (menuBtn) {
+      const menuItemId = menuBtn.dataset.id;
+      this.setActiveMenuItem(menuItemId);
+      this._callback.menuClick(menuItemId);
+    }
   };
 }
