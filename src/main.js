@@ -48,9 +48,16 @@ const showEventsTable = () => {
 const onMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
+      if (!isStats) {
+        return;
+      }
       showEventsTable();
       break;
     case MenuItem.STATS:
+      if (isStats) {
+        return;
+      }
+
       statsComponent = new StatsView(tripModel.points);
       changeStatusPresenters({destroy: true});
       render(pageMainContainerElement, statsComponent, RenderPosition.BEFOREEND);
