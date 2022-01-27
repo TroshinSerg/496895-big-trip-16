@@ -10,7 +10,7 @@ import NewPointPresenter from './new-point-presenter.js';
 import {SortType, UpdateType, UserAction, FilterType, State} from '../utils/const.js';
 
 export default class TripPresenter {
-  #pageMainContainer = null;
+  #pageMainContainerElement = null;
   #sortComponent = null;
   #tripModel = null;
   #filterModel = null;
@@ -25,8 +25,8 @@ export default class TripPresenter {
   #currentFilterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(pageMainContainer, tripModel, filterModel) {
-    this.#pageMainContainer = pageMainContainer;
+  constructor(pageMainContainerElement, tripModel, filterModel) {
+    this.#pageMainContainerElement = pageMainContainerElement;
     this.#tripModel = tripModel;
     this.#filterModel = filterModel;
 
@@ -179,7 +179,7 @@ export default class TripPresenter {
   };
 
   #renderTripEvents = () => {
-    render(this.#pageMainContainer, this.#tripEventsComponent, RenderPosition.BEFOREEND);
+    render(this.#pageMainContainerElement, this.#tripEventsComponent, RenderPosition.BEFOREEND);
   };
 
   #renderLoading = () => {

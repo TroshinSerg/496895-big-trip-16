@@ -4,14 +4,14 @@ import EditPointView from '../view/edit-point-view.js';
 import {UserAction, UpdateType} from '../utils/const.js';
 
 export default class NewPointPresenter {
-  #pointsListContainer = null;
+  #pointsListContainerElement = null;
   #changeData = null;
   #editPointComponent = null;
   #addPointButton = null;
   #onDeleteClick = null;
 
-  constructor(pointsListContainer, changeData, onDeleteClick) {
-    this.#pointsListContainer = pointsListContainer;
+  constructor(pointsListContainerElement, changeData, onDeleteClick) {
+    this.#pointsListContainerElement = pointsListContainerElement;
     this.#changeData = changeData;
     this.#onDeleteClick = onDeleteClick;
   }
@@ -34,7 +34,7 @@ export default class NewPointPresenter {
       this.#onDeleteClick();
     });
 
-    render(this.#pointsListContainer, this.#editPointComponent, RenderPosition.AFTERBEGIN);
+    render(this.#pointsListContainerElement, this.#editPointComponent, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#onEscapeKeyDown);
   };
 

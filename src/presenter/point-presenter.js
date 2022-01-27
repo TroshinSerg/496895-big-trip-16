@@ -11,7 +11,7 @@ const Mode = {
 };
 
 export default class PointPresenter {
-  #pointsListContainer = null;
+  #pointsListContainerElement = null;
   #changeData = null;
   #changeMode = null;
   #pointComponent = null;
@@ -22,8 +22,8 @@ export default class PointPresenter {
   #destinations = null;
   #mode = Mode.DEFAULT;
 
-  constructor(pointsListContainer, changeData, changeMode, offers, destinations) {
-    this.#pointsListContainer = pointsListContainer;
+  constructor(pointsListContainerElement, changeData, changeMode, offers, destinations) {
+    this.#pointsListContainerElement = pointsListContainerElement;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
     this.#offers = offers;
@@ -63,7 +63,7 @@ export default class PointPresenter {
     });
 
     if (prevPointComponent === null || prevEditPointComponent === null) {
-      render(this.#pointsListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
+      render(this.#pointsListContainerElement, this.#pointComponent, RenderPosition.BEFOREEND);
       return;
     }
 
