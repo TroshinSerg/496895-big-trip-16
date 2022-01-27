@@ -4,21 +4,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {EVENT_TYPES} from '../utils/const.js';
 import {getDurationString, getDurationInMinutes} from '../utils/common.js';
 
-const getfilteredPoints = (points, type) => points.filter((point) => point.type === type);
-const CustomChartOptions = {
-  MONEY: {
-    setData: (points, type) => getfilteredPoints(points, type).reduce((total, point) => total + point.basePrice, 0),
-    formatter: (val) => `€ ${val}`
-  },
-  TYPE: {
-    setData: (points, type) => getfilteredPoints(points, type).length,
-    formatter: (val) => `${val}x`
-  },
-  TIME: {
-    setData: (points, type) => getfilteredPoints(points, type).reduce((duration, point) => duration + getDurationInMinutes(point.dateFrom, point.dateTo), 0),
-    formatter: (val) => getDurationString(val)
-  }
-};
+const getFilteredPoints = (points, type) => points.filter((point) => point.type === type);
 
 const createStatsTemplate = () => (
   `<section class="statistics">
@@ -37,6 +23,21 @@ const createStatsTemplate = () => (
     </div>
   </section>`
 );
+
+const customChartOption = {
+  money: {
+    setData: (points, type) => getFilteredPoints(points, type).reduce((total, point) => total + point.basePrice, 0),
+    formatter: (val) => `€ ${val}`
+  },
+  type: {
+    setData: (points, type) => getFilteredPoints(points, type).length,
+    formatter: (val) => `${val}x`
+  },
+  time: {
+    setData: (points, type) => getFilteredPoints(points, type).reduce((duration, point) => duration + getDurationInMinutes(point.dateFrom, point.dateTo), 0),
+    formatter: (val) => getDurationString(val)
+  }
+};
 
 export default class StatsView extends SmartView {
   #eventTypes = [...EVENT_TYPES];
@@ -72,19 +73,17 @@ export default class StatsView extends SmartView {
     this.#chartTypes.forEach((chartType) => {
       const sortedData = [];
       const sortedLabels = [];
-      const chartTypeUpper = chartType.toUpperCase();
       const canvas = this.element.querySelector(`#${chartType}`);
 
-      // Рассчитаем высоту канваса в зависимости от того, сколько данных в него будет передаваться
       canvas.height = this.#barHeight * this.#eventTypes.length;
 
-      const chartData = this.#getDataForChart(this._data, CustomChartOptions[chartTypeUpper].setData);
+      const chartData = this.#getDataForChart(this._data, customChartOption[chartType].setData);
       const dataItems = this.#setDataItems(this.#labels, chartData);
 
       dataItems.sort((dataItemA, dataItemB) => dataItemB.data - dataItemA.data);
 
       this.#parseDataItems(dataItems, sortedLabels, sortedData);
-      this.#chart.set(chartTypeUpper, new Chart(canvas, {
+      this.#chart.set(chartType, new Chart(canvas, {
         plugins: [ChartDataLabels],
         type: 'horizontalBar',
         data: {
@@ -108,12 +107,12 @@ export default class StatsView extends SmartView {
               color: '#000000',
               anchor: 'end',
               align: 'start',
-              formatter: CustomChartOptions[chartTypeUpper].formatter
+              formatter: customChartOption[chartType].formatter
             },
           },
           title: {
             display: true,
-            text: chartTypeUpper,
+            text: chartType.toUpperCase(),
             fontColor: '#000000',
             fontSize: 23,
             position: 'left',
