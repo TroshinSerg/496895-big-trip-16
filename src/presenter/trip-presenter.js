@@ -77,6 +77,82 @@ export default class TripPresenter {
     this.#newPointPresenter.init(button, this.offers, this.destinations);
   };
 
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter(this.#eventsListComponent, this.#onViewAction, this.#onModeChange, this.offers, this.destinations);
+    pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
+  };
+
+  #renderPoints = (points) => {
+    points.forEach((point) => {
+      this.#renderPoint(point);
+    });
+  };
+
+  #renderNoEvents = () => {
+    this.#noEventsComponent = new NoEventsView(this.#currentFilterType);
+    render(this.#tripEventsComponent, this.#noEventsComponent, RenderPosition.BEFOREEND);
+  };
+
+  #renderSort = () => {
+    this.#sortComponent = new SortView(this.#currentSortType);
+    this.#sortComponent.setOnFormChange(this.#onSortTypeChange);
+    render(this.#tripEventsComponent, this.#sortComponent, RenderPosition.BEFOREEND);
+  };
+
+  #renderTripEvents = () => {
+    render(this.#pageMainContainerElement, this.#tripEventsComponent, RenderPosition.BEFOREEND);
+  };
+
+  #renderLoading = () => {
+    render(this.#tripEventsComponent, this.#loadingComponent, RenderPosition.BEFOREEND);
+  };
+
+  #renderEventsList = () => {
+    render(this.#tripEventsComponent, this.#eventsListComponent, RenderPosition.BEFOREEND);
+  };
+
+  #clearEventsList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  };
+
+  #renderEventsBoard = (points) => {
+    this.#renderTripEvents();
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    if (points.length === 0) {
+      this.#renderNoEvents();
+      return;
+    }
+
+    this.#renderSort();
+    this.#renderEventsList();
+    this.#renderPoints(points);
+  };
+
+  #clearEventsBoard = ({resetSortType = false} = {}) => {
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
+    }
+
+    this.#newPointPresenter.destroy();
+    this.#clearEventsList();
+
+    remove(this.#loadingComponent);
+    remove(this.#sortComponent);
+    remove(this.#eventsListComponent);
+    remove(this.#tripEventsComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
+  };
+
   #onModeChange = () => {
     this.#newPointPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
@@ -153,81 +229,5 @@ export default class TripPresenter {
     this.#currentSortType = sortType;
     this.#clearEventsList();
     this.#renderPoints(this.points);
-  };
-
-  #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#eventsListComponent, this.#onViewAction, this.#onModeChange, this.offers, this.destinations);
-    pointPresenter.init(point);
-    this.#pointPresenter.set(point.id, pointPresenter);
-  };
-
-  #renderPoints = (points) => {
-    points.forEach((point) => {
-      this.#renderPoint(point);
-    });
-  };
-
-  #renderNoEvents = () => {
-    this.#noEventsComponent = new NoEventsView(this.#currentFilterType);
-    render(this.#tripEventsComponent, this.#noEventsComponent, RenderPosition.BEFOREEND);
-  };
-
-  #renderSort = () => {
-    this.#sortComponent = new SortView(this.#currentSortType);
-    this.#sortComponent.setOnFormChange(this.#onSortTypeChange);
-    render(this.#tripEventsComponent, this.#sortComponent, RenderPosition.BEFOREEND);
-  };
-
-  #renderTripEvents = () => {
-    render(this.#pageMainContainerElement, this.#tripEventsComponent, RenderPosition.BEFOREEND);
-  };
-
-  #renderLoading = () => {
-    render(this.#tripEventsComponent, this.#loadingComponent, RenderPosition.BEFOREEND);
-  };
-
-  #renderEventsList = () => {
-    render(this.#tripEventsComponent, this.#eventsListComponent, RenderPosition.BEFOREEND);
-  };
-
-  #clearEventsList = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
-  };
-
-  #renderEventsBoard = (points) => {
-    this.#renderTripEvents();
-
-    if (this.#isLoading) {
-      this.#renderLoading();
-      return;
-    }
-
-    if (points.length === 0) {
-      this.#renderNoEvents();
-      return;
-    }
-
-    this.#renderSort();
-    this.#renderEventsList();
-    this.#renderPoints(points);
-  };
-
-  #clearEventsBoard = ({resetSortType = false} = {}) => {
-    if (this.#noEventsComponent) {
-      remove(this.#noEventsComponent);
-    }
-
-    this.#newPointPresenter.destroy();
-    this.#clearEventsList();
-
-    remove(this.#loadingComponent);
-    remove(this.#sortComponent);
-    remove(this.#eventsListComponent);
-    remove(this.#tripEventsComponent);
-
-    if (resetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
-    }
   };
 }

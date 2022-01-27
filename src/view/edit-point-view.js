@@ -240,27 +240,14 @@ export default class EditPointView extends SmartView {
     this.#dom.clear();
   };
 
-  reset = (point) => {
-    this.updateState(this.#parseDataToState(point));
-  };
-
   restore = () => {
     this.#executeFunctions();
     this.#restoreHandlers();
   };
 
-  #executeFunctions = () => {
-    this.#setDom();
-    this.#setDatepicker();
-    this.#formValidation();
+  reset = (point) => {
+    this.updateState(this.#parseDataToState(point));
   };
-
-  #restoreHandlers = () => {
-    this.#setInnerHandlers();
-    this.setOnFormSubmit(this._callback.formSubmit);
-    this.setOnEditClick(this._callback.editClick);
-    this.setOnDeleteClick(this._callback.deleteClick);
-  }
 
   setOnFormSubmit = (callback) => {
     this._callback.formSubmit = callback;
@@ -281,6 +268,19 @@ export default class EditPointView extends SmartView {
     this.#dom.get('DELETE').addEventListener('click', this.#onDeleteClick);
   };
 
+  #executeFunctions = () => {
+    this.#setDom();
+    this.#setDatepicker();
+    this.#validateForm();
+  };
+
+  #restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setOnFormSubmit(this._callback.formSubmit);
+    this.setOnEditClick(this._callback.editClick);
+    this.setOnDeleteClick(this._callback.deleteClick);
+  }
+
   #setDatepicker = () => {
     this.#dom.get('DATES').forEach((input) => {
       const key = input.dataset.type;
@@ -298,78 +298,6 @@ export default class EditPointView extends SmartView {
     this.#dom.get('FORM').addEventListener('change', this.#onFormChange);
     this.#dom.get('PRICE').addEventListener('input', this.#onPriceInput);
     this.#dom.get('DESTINATION').addEventListener('input', this.#onDestinationInput);
-  };
-
-  #onDateChange = ([userDate], formatedDate, instance) => {
-    this.updateState({
-      [instance.element.dataset.type]: userDate,
-    }, true);
-
-    const key = instance.element.dataset.type;
-    const reverseKey = ReverseDateType[key.toUpperCase()];
-    const typeKey = reverseKey.split('date')[1].toUpperCase();
-    const extremeDateKey = DateType[typeKey].split('Date')[0];
-
-    this.#extremeDate[extremeDateKey] = userDate;
-
-    this.#datepicker.get(typeKey).destroy();
-    this.#datepicker.delete(typeKey);
-
-    const datepicker = flatpickr(this.#dateInput.get(typeKey), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[typeKey]]: this.#extremeDate[extremeDateKey]});
-
-    this.#datepicker.set(typeKey, datepicker);
-  };
-
-  #onFormChange = (evt) => {
-    const eventTypeInput = evt.target.closest('input[name="event-type"]');
-    const eventOfferCheckbox = evt.target.closest('.event__offer-checkbox');
-
-    if (eventTypeInput) {
-      const type = eventTypeInput.value;
-      this.updateState({type, offers: this.#getOffersForType(type)});
-    }
-
-    if (eventOfferCheckbox) {
-      const eventOfferCheckboxId = parseInt(eventOfferCheckbox.dataset.id, 10);
-
-      const offers = this._state.offers.map((offer) => ({...offer}));
-      const changedOffer = offers.find((offer) => offer.id === eventOfferCheckboxId);
-
-      changedOffer.isChecked = !changedOffer.isChecked;
-
-      this.updateState({offers}, true);
-    }
-  };
-
-  #onPriceInput = (evt) => {
-    this.#formValidation();
-
-    this.updateState({basePrice: parseInt(evt.target.value, 10)}, true);
-  };
-
-  #onDestinationInput = (evt) => {
-    this.#formValidation({destinationCallback: () => {
-      if (this._state.destination.name !== evt.target.value) {
-        this.updateState({
-          destination: {...this.#destinations.filter((destination) => destination.name === evt.target.value)[0]}
-        });
-      }
-    }});
-  };
-
-  #onFormSubmit = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(this.#parseStateToData(this._state));
-  };
-
-  #onEditClick = (evt) => {
-    evt.preventDefault();
-    this._callback.editClick();
-  };
-
-  #onDeleteClick = (evt) => {
-    evt.preventDefault();
-    this._callback.deleteClick(this.#parseStateToData(this._state));
   };
 
   #isDestinationValid = () => {
@@ -392,7 +320,7 @@ export default class EditPointView extends SmartView {
     element.reportValidity();
   };
 
-  #formValidation = debounce((callback = {destinationCallback: null}) => {
+  #validateForm = debounce((callback = {destinationCallback: null}) => {
     const isDestinationValid = this.#isDestinationValid();
     const isPriceValid = this.#isPriceValid();
 
@@ -442,5 +370,77 @@ export default class EditPointView extends SmartView {
     delete data.isDeleting;
 
     return data;
+  };
+
+  #onDateChange = ([userDate], formatedDate, instance) => {
+    this.updateState({
+      [instance.element.dataset.type]: userDate,
+    }, true);
+
+    const key = instance.element.dataset.type;
+    const reverseKey = ReverseDateType[key.toUpperCase()];
+    const typeKey = reverseKey.split('date')[1].toUpperCase();
+    const extremeDateKey = DateType[typeKey].split('Date')[0];
+
+    this.#extremeDate[extremeDateKey] = userDate;
+
+    this.#datepicker.get(typeKey).destroy();
+    this.#datepicker.delete(typeKey);
+
+    const datepicker = flatpickr(this.#dateInput.get(typeKey), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[typeKey]]: this.#extremeDate[extremeDateKey]});
+
+    this.#datepicker.set(typeKey, datepicker);
+  };
+
+  #onFormChange = (evt) => {
+    const eventTypeInput = evt.target.closest('input[name="event-type"]');
+    const eventOfferCheckbox = evt.target.closest('.event__offer-checkbox');
+
+    if (eventTypeInput) {
+      const type = eventTypeInput.value;
+      this.updateState({type, offers: this.#getOffersForType(type)});
+    }
+
+    if (eventOfferCheckbox) {
+      const eventOfferCheckboxId = parseInt(eventOfferCheckbox.dataset.id, 10);
+
+      const offers = this._state.offers.map((offer) => ({...offer}));
+      const changedOffer = offers.find((offer) => offer.id === eventOfferCheckboxId);
+
+      changedOffer.isChecked = !changedOffer.isChecked;
+
+      this.updateState({offers}, true);
+    }
+  };
+
+  #onPriceInput = (evt) => {
+    this.#validateForm();
+
+    this.updateState({basePrice: parseInt(evt.target.value, 10)}, true);
+  };
+
+  #onDestinationInput = (evt) => {
+    this.#validateForm({destinationCallback: () => {
+      if (this._state.destination.name !== evt.target.value) {
+        this.updateState({
+          destination: {...this.#destinations.filter((destination) => destination.name === evt.target.value)[0]}
+        });
+      }
+    }});
+  };
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this.#parseStateToData(this._state));
+  };
+
+  #onEditClick = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
+
+  #onDeleteClick = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(this.#parseStateToData(this._state));
   };
 }

@@ -56,5 +56,5 @@ export default class SortView extends AbstractView {
     }
 
     this._callback.formChange(input.dataset.sortType);
-  }
+  };
 }

@@ -25,9 +25,7 @@ export default class NewPointPresenter {
     this.#addPointButton.disabled = true;
     this.#editPointComponent = new EditPointView(null, offers, destinations);
 
-    this.#editPointComponent.setOnFormSubmit((pointsItem) => {
-      this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, pointsItem);
-    });
+    this.#editPointComponent.setOnFormSubmit(this.#onFormSubmit);
 
     this.#editPointComponent.setOnDeleteClick(() => {
       this.destroy();
@@ -73,5 +71,9 @@ export default class NewPointPresenter {
       evt.preventDefault();
       this.destroy();
     }
+  };
+
+  #onFormSubmit = (pointsItem) => {
+    this.#changeData(UserAction.ADD_POINT, UpdateType.MINOR, pointsItem);
   };
 }

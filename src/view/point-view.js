@@ -81,10 +81,10 @@ export default class PointView extends AbstractView {
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
-  }
+  };
 
   #onIsFavoriteClick = (evt) => {
     evt.preventDefault();
     this._callback.isFavoriteClick();
-  }
+  };
 }

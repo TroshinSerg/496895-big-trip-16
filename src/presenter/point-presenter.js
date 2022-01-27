@@ -39,28 +39,11 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(this.#point);
     this.#editPointComponent = new EditPointView(this.#point, this.#offers, this.#destinations);
 
-    this.#pointComponent.setOnEditClick(() => {
-      this.#replaceToEditPoint();
-      document.addEventListener('keydown', this.#onEscapeKeyDown);
-    });
-
-    this.#pointComponent.setOnIsFavoriteClick(() => {
-      this.#changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
-    });
-
-    this.#editPointComponent.setOnFormSubmit((pointsItem) => {
-      this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, pointsItem);
-    });
-
-    this.#editPointComponent.setOnEditClick(() => {
-      this.#replaceToPoint();
-      document.removeEventListener('keydown', this.#onEscapeKeyDown);
-    });
-
-    this.#editPointComponent.setOnDeleteClick((pointsItem) => {
-      this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, pointsItem);
-      document.removeEventListener('keydown', this.#onEscapeKeyDown);
-    });
+    this.#pointComponent.setOnEditClick(this.#onEditBtnPointComponentClick);
+    this.#pointComponent.setOnIsFavoriteClick(this.#onIsFavoriteClick);
+    this.#editPointComponent.setOnFormSubmit(this.#onFormSubmit);
+    this.#editPointComponent.setOnEditClick(this.#onEditBtnEditPointComponentClick);
+    this.#editPointComponent.setOnDeleteClick(this.#onDeleteClick);
 
     if (prevPointComponent === null || prevEditPointComponent === null) {
       render(this.#pointsListContainerElement, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -127,6 +110,12 @@ export default class PointPresenter {
     document.removeEventListener('keydown', this.#onEscapeKeyDown);
   };
 
+  #replaceToEditPoint = () => {
+    replace(this.#editPointComponent, this.#pointComponent);
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
+  };
+
   #onEscapeKeyDown = (evt) => {
     if (isEscKeyCode(evt.keyCode)) {
       evt.preventDefault();
@@ -136,9 +125,26 @@ export default class PointPresenter {
     }
   };
 
-  #replaceToEditPoint = () => {
-    replace(this.#editPointComponent, this.#pointComponent);
-    this.#changeMode();
-    this.#mode = Mode.EDITING;
+  #onIsFavoriteClick = () => {
+    this.#changeData(UserAction.UPDATE_POINT, UpdateType.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
+  };
+
+  #onDeleteClick = (pointsItem) => {
+    this.#changeData(UserAction.DELETE_POINT, UpdateType.MINOR, pointsItem);
+    document.removeEventListener('keydown', this.#onEscapeKeyDown);
+  };
+
+  #onFormSubmit = (pointsItem) => {
+    this.#changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, pointsItem);
+  };
+
+  #onEditBtnPointComponentClick = () => {
+    this.#replaceToEditPoint();
+    document.addEventListener('keydown', this.#onEscapeKeyDown);
+  };
+
+  #onEditBtnEditPointComponentClick = () => {
+    this.#replaceToPoint();
+    document.removeEventListener('keydown', this.#onEscapeKeyDown);
   };
 }

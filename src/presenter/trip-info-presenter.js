@@ -36,11 +36,7 @@ export default class TripInfoPresenter {
 
     replace(this.#tripInfoComponent, prevTripInfoComponent);
     remove(prevTripInfoComponent);
-  }
-
-  #onModelEvent = () => {
-    this.init();
-  }
+  };
 
   #createTripInfoData = (items = []) => {
     const destinationsNames = [];
@@ -71,5 +67,9 @@ export default class TripInfoPresenter {
       startDate,
       endDate
     };
+  };
+
+  #onModelEvent = () => {
+    this.init();
   };
 }
