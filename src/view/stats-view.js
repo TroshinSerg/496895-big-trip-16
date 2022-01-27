@@ -79,11 +79,11 @@ export default class StatsView extends SmartView {
       canvas.height = this.#barHeight * this.#eventTypes.length;
 
       const chartData = this.#getDataForChart(this._data, CustomChartOptions[chartTypeUpper].setData);
-      const dataObjects = this.#setArrayOfObjects(this.#labels, chartData);
+      const dataItems = this.#setDataItems(this.#labels, chartData);
 
-      dataObjects.sort((dataObjectA, dataObjectB) => dataObjectB.data - dataObjectA.data);
+      dataItems.sort((dataItemA, dataItemB) => dataItemB.data - dataItemA.data);
 
-      this.#parseArrayOfObjects(dataObjects, sortedLabels, sortedData);
+      this.#parseDataItems(dataItems, sortedLabels, sortedData);
       this.#chart.set(chartTypeUpper, new Chart(canvas, {
         plugins: [ChartDataLabels],
         type: 'horizontalBar',
@@ -154,12 +154,12 @@ export default class StatsView extends SmartView {
 
   #getDataForChart = (points, setDataItem) => this.#eventTypes.map((type) => setDataItem(points, type));
 
-  #setArrayOfObjects = (labels, data) => labels.map((label, index) => ({label, data: data[index]}));
+  #setDataItems = (labels, data) => labels.map((label, index) => ({label, data: data[index]}));
 
-  #parseArrayOfObjects = (arrayOfObjects, sortedLabels, sortedData) => {
-    arrayOfObjects.forEach((objectsItem) => {
-      sortedLabels.push(objectsItem.label);
-      sortedData.push(objectsItem.data);
+  #parseDataItems = (dataItems, sortedLabels, sortedData) => {
+    dataItems.forEach((dataItem) => {
+      sortedLabels.push(dataItem.label);
+      sortedData.push(dataItem.data);
     });
   };
 }

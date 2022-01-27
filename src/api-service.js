@@ -11,7 +11,7 @@ const Url = {
   DESTINATIONS: 'destinations'
 };
 
-const HEADER_INIT_OBJECT = {'Content-Type': 'application/json'};
+const HEADER_INIT_CONFIG = {'Content-Type': 'application/json'};
 
 export default class ApiService {
   #endPoint = null;
@@ -42,7 +42,7 @@ export default class ApiService {
       url: `${Url.POINTS}/${point.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers(HEADER_INIT_OBJECT)
+      headers: new Headers(HEADER_INIT_CONFIG)
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
@@ -55,7 +55,7 @@ export default class ApiService {
       url: Url.POINTS,
       method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers(HEADER_INIT_OBJECT)
+      headers: new Headers(HEADER_INIT_CONFIG)
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
