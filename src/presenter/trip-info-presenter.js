@@ -27,7 +27,6 @@ export default class TripInfoPresenter {
     }
 
     const tripInfoData = this.#createTripInfoData(points);
-
     this.#tripInfoComponent = new TripInfoView(tripInfoData);
 
     if (prevTripInfoComponent === null) {
@@ -44,7 +43,7 @@ export default class TripInfoPresenter {
   }
 
   #createTripInfoData = (items = []) => {
-    const destinationsNames = new Set();
+    const destinationsNames = [];
     let totalPrice = 0;
     let startDateInSeconds = new Date(items[0].dateFrom).getTime();
     let endDateInSeconds = 0;
@@ -53,22 +52,16 @@ export default class TripInfoPresenter {
       totalPrice += point.basePrice;
 
       if (point.offers.length) {
-        totalPrice += point.offers
-          .reduce((totalOfferPrice, offer) => totalOfferPrice + offer.price, 0);
+        totalPrice += point.offers.reduce((totalOfferPrice, offer) => totalOfferPrice + offer.price, 0);
       }
 
-      destinationsNames.add(point.destination.name);
+      destinationsNames.push(point.destination.name);
 
-      // Если дата начала последующих точек маршрута ранее, чем дата старта маршрута - перезаписываем стартовую дату
       startDateInSeconds = Math.min(startDateInSeconds, new Date(point.dateFrom).getTime());
-
-      // Если дата окончания последующих точек маршрута позже, чем дата окончания маршрута - перезаписываем дату окончания маршрута
       endDateInSeconds = Math.max(endDateInSeconds, new Date(point.dateTo).getTime());
     });
 
-    const arrayOfDestinationsNames = [...destinationsNames];
-
-    const route = arrayOfDestinationsNames.length <= this.#maxDestinationsNames ? arrayOfDestinationsNames.join(' — ') : `${arrayOfDestinationsNames[0]} — ... — ${arrayOfDestinationsNames[arrayOfDestinationsNames.length - 1]}`;
+    const route = destinationsNames.length <= this.#maxDestinationsNames ? destinationsNames.join(' — ') : `${destinationsNames[0]} — ... — ${destinationsNames[destinationsNames.length - 1]}`;
     const startDate = new Date(startDateInSeconds);
     const endDate = new Date(endDateInSeconds);
 
