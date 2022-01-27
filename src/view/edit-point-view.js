@@ -60,7 +60,9 @@ const EMPTY_POINT = {
 };
 
 const createEditPointTemplate = (point, destinations, isNewPoint) => {
-  const {basePrice, dateFrom, dateTo, destination, id, offers, type, isDisabled, isSaving,     isDeleting} = point;
+  const {basePrice, dateFrom, dateTo, destination, id, offers, type, isDisabled, isSaving, isDeleting} = point;
+
+  const price = String(basePrice);
 
   let offersMarkup = '';
   let imagesMarkup = '';
@@ -162,7 +164,7 @@ const createEditPointTemplate = (point, destinations, isNewPoint) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${he.encode(basePrice)}"${isDisabled ? ' disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${he.encode(price)}"${isDisabled ? ' disabled' : ''}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled ? ' disabled' : ''}>${isSaving ? ' Saving...' : 'Save'}</button>
@@ -336,7 +338,7 @@ export default class EditPointView extends SmartView {
   };
 
   #onPriceInput = (evt) => {
-    evt.target.value = evt.target.value.replace(/\D/g, '');
+    //evt.target.value = evt.target.value.replace(/\D/g, '');
 
     this.#formValidation();
 
