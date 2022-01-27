@@ -53,6 +53,7 @@ const sortByTime = (points) => (
 );
 
 const sortByPrice = (points) => points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
+
 const sortByDate = (points) => points.sort((pointA, pointB) => Date.parse(pointA.dateFrom) - Date.parse(pointB.dateFrom));
 
 const getFlagMap = (point) => {
