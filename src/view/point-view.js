@@ -6,6 +6,9 @@ const createPointTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
   let offersMarkup = '';
 
+  const durationInMinutes = getDurationInMinutes(dateFrom, dateTo);
+  const durationString = getDurationString(durationInMinutes);
+
   if (offers.length) {
     offersMarkup = offers.map((offer) => (
       `<li class="event__offer">
@@ -20,9 +23,6 @@ const createPointTemplate = (point) => {
         ${offersMarkup}
       </ul>`;
   }
-
-  const durationInMinutes = getDurationInMinutes(dateFrom, dateTo);
-  const durationString = getDurationString(durationInMinutes);
 
   return `<li class="trip-events__item">
     <div class="event">
@@ -81,10 +81,10 @@ export default class PointView extends AbstractView {
   #onEditClick = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
-  }
+  };
 
   #onIsFavoriteClick = (evt) => {
     evt.preventDefault();
     this._callback.isFavoriteClick();
-  }
+  };
 }

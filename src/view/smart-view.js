@@ -15,7 +15,7 @@ export default class SmartView extends AbstractView {
     }
 
     this.updateElement();
-  }
+  };
 
   updateElement = () => {
     const prevElement = this.element;
@@ -27,9 +27,9 @@ export default class SmartView extends AbstractView {
     parent.replaceChild(newElement, prevElement);
 
     this.restore();
-  }
+  };
 
   restore = () => {
     throw new Error('Abstract method not implemented: restore');
-  }
+  };
 }

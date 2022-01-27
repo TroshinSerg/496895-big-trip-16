@@ -53,20 +53,38 @@ const sortByTime = (points) => (
 );
 
 const sortByPrice = (points) => points.sort((pointA, pointB) => pointB.basePrice - pointA.basePrice);
-const sortByDate = (points) => points.sort((pointA, pointB) => Date.parse(pointA.dateFrom) - Date.parse(pointB.dateFrom));
-const filterPast = (points) => points.filter((point) => Date.now() - Date.parse(point.dateTo) > 0);
-const filterFuture = (points) => points.filter((point) => Date.now() - Date.parse(point.dateFrom) < 0);
 
-const SortPointsMethodMap = {
-  DEFAULT: sortByDate,
-  TIME: sortByTime,
-  PRICE: sortByPrice
+const sortByDate = (points) => points.sort((pointA, pointB) => Date.parse(pointA.dateFrom) - Date.parse(pointB.dateFrom));
+
+const getFlagMap = (point) => {
+  const now = Date.now();
+  return {
+    isPast: now - Date.parse(point.dateTo) > 0,
+    isFuture: now - Date.parse(point.dateFrom) <= 0,
+    isCurrent: now - Date.parse(point.dateFrom) > 0 && now - Date.parse(point.dateTo) < 0
+  };
 };
 
-const FilterPointsMethodMap = {
-  EVERYTHING: (points) => points,
-  PAST: filterPast,
-  FUTURE: filterFuture
+const filterPast = (points) => points.filter((point) => {
+  const {isPast, isCurrent} = getFlagMap(point);
+  return isCurrent || isPast;
+});
+
+const filterFuture = (points) => points.filter((point) => {
+  const {isFuture, isCurrent} = getFlagMap(point);
+  return isCurrent || isFuture;
+});
+
+const sortPointsMethodMap = {
+  default: sortByDate,
+  time: sortByTime,
+  price: sortByPrice
+};
+
+const filterPointsMethodMap = {
+  everything: (points) => points,
+  past: filterPast,
+  future: filterFuture
 };
 
 const getDurationInMinutes = (dateFrom, dateTo) => dayjs(dateTo).diff(dateFrom, 'minute');
@@ -87,8 +105,8 @@ const getRandomId = (prefix = 'new') => `${prefix}-${Math.random() * 10}`;
 export {
   getRandomInteger,
   isEscKeyCode,
-  SortPointsMethodMap,
-  FilterPointsMethodMap,
+  sortPointsMethodMap,
+  filterPointsMethodMap,
   debounce,
   getDurationString,
   getDurationInMinutes,

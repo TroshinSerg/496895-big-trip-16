@@ -1,13 +1,13 @@
 import AbstractView from './abstract-view.js';
 
-const TripEventsMessageMap = {
+const TripEventsMessage = {
   EVERYTHING: 'Click New Event to create your first point',
   PAST: 'There are no past events now',
   FUTURE: 'There are no future events now'
 };
 
 const createNoEventsTemplate = (filterName) => (
-  `<p class="trip-events__msg">${TripEventsMessageMap[filterName.toUpperCase()]}</p>`
+  `<p class="trip-events__msg">${TripEventsMessage[filterName.toUpperCase()]}</p>`
 );
 
 export default class NoEventsView extends AbstractView {
