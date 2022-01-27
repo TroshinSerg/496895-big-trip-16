@@ -6,9 +6,20 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import { debounce, getRandomId } from '../utils/common.js';
 
+const EMPTY_POINT = {
+  basePrice: 0,
+  dateFrom: dayjs().toDate(),
+  dateTo: dayjs().toDate(),
+  destination: {},
+  id: null,
+  isFavorite: false,
+  offers: [],
+  type: EVENT_TYPES[0]
+};
+
 const DateType= {
-  DATEFROM: 'maxDate',
-  DATETO: 'minDate'
+  FROM: 'maxDate',
+  TO: 'minDate'
 };
 
 const ReverseDateType = {
@@ -48,17 +59,6 @@ const domItems = [
   }
 ];
 
-const EMPTY_POINT = {
-  basePrice: 0,
-  dateFrom: dayjs().toDate(),
-  dateTo: dayjs().toDate(),
-  destination: {},
-  id: null,
-  isFavorite: false,
-  offers: [],
-  type: EVENT_TYPES[0]
-};
-
 const createEditPointTemplate = (point, destinations, isNewPoint) => {
   const {basePrice, dateFrom, dateTo, destination, id, offers, type, isDisabled, isSaving, isDeleting} = point;
 
@@ -82,6 +82,7 @@ const createEditPointTemplate = (point, destinations, isNewPoint) => {
   if (offers.length) {
     offersMarkup = offers.map((offer) => {
       const idPart = getRandomId(type);
+
       return `<div class="event__offer-selector">
         <input class="event__offer-checkbox visually-hidden" data-id="${offer.id}" id="event-offer-${idPart}-${id}" type="checkbox" name="event-offer-${type}"${offer.isChecked ? ' checked' : ''}${isDisabled ? ' disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${idPart}-${id}">
@@ -184,15 +185,15 @@ const createEditPointTemplate = (point, destinations, isNewPoint) => {
 export default class EditPointView extends SmartView {
   #datepicker = new Map();
   #dateInput = new Map();
-  #DOM = new Map();
+  #dom = new Map();
   #isNewPoint = false;
   #point = null;
   #allOffers = null;
   #destinations = null;
   #destinationsNames = null;
-  #ExtremeDate = {
-    MAXDATE: null,
-    MINDATE: null
+  #extremeDate = {
+    max: null,
+    min: null
   };
 
   #datepickerOptions = null;
@@ -209,8 +210,8 @@ export default class EditPointView extends SmartView {
 
     this._state = this.#parseDataToState(this.#point);
 
-    this.#ExtremeDate.MAXDATE = this.#point.dateTo;
-    this.#ExtremeDate.MINDATE = this.#point.dateFrom;
+    this.#extremeDate.max = this.#point.dateTo;
+    this.#extremeDate.min = this.#point.dateFrom;
 
     this.#datepickerOptions = {
       dateFormat: 'd/m/y H:i',
@@ -236,7 +237,7 @@ export default class EditPointView extends SmartView {
     }
 
     this.#dateInput.clear();
-    this.#DOM.clear();
+    this.#dom.clear();
   };
 
   reset = (point) => {
@@ -263,39 +264,40 @@ export default class EditPointView extends SmartView {
 
   setOnFormSubmit = (callback) => {
     this._callback.formSubmit = callback;
-    this.#DOM.get('FORM').addEventListener('submit', this.#onFormSubmit);
+    this.#dom.get('FORM').addEventListener('submit', this.#onFormSubmit);
   };
 
   setOnEditClick = (callback) => {
-    if (this.#DOM.get('ROLLUP') === null) {
+    if (this.#dom.get('ROLLUP') === null) {
       return;
     }
 
     this._callback.editClick = callback;
-    this.#DOM.get('ROLLUP').addEventListener('click', this.#onEditClick);
+    this.#dom.get('ROLLUP').addEventListener('click', this.#onEditClick);
   };
 
   setOnDeleteClick = (callback) => {
     this._callback.deleteClick = callback;
-    this.#DOM.get('DELETE').addEventListener('click', this.#onDeleteClick);
+    this.#dom.get('DELETE').addEventListener('click', this.#onDeleteClick);
   };
 
   #setDatepicker = () => {
-    this.#DOM.get('DATES').forEach((input) => {
+    this.#dom.get('DATES').forEach((input) => {
       const key = input.dataset.type;
-      const keyUpper = key.toUpperCase();
-      const date = this.#ExtremeDate[DateType[keyUpper].toUpperCase()];
-      const datepicker = flatpickr(input, {...this.#datepickerOptions, defaultDate: this._state[key], [DateType[keyUpper]]: date});
+      const typeKey = key.split('date')[1].toUpperCase();
+      const extremeDataKey = DateType[typeKey].split('Date')[0];
+      const date = this.#extremeDate[extremeDataKey];
+      const datepicker = flatpickr(input, {...this.#datepickerOptions, defaultDate: this._state[key], [DateType[typeKey]]: date});
 
-      this.#datepicker.set(keyUpper, datepicker);
-      this.#dateInput.set(keyUpper, input);
+      this.#datepicker.set(typeKey, datepicker);
+      this.#dateInput.set(typeKey, input);
     });
   };
 
   #setInnerHandlers = () => {
-    this.#DOM.get('FORM').addEventListener('change', this.#onFormChange);
-    this.#DOM.get('PRICE').addEventListener('input', this.#onPriceInput);
-    this.#DOM.get('DESTINATION').addEventListener('input', this.#onDestinationInput);
+    this.#dom.get('FORM').addEventListener('change', this.#onFormChange);
+    this.#dom.get('PRICE').addEventListener('input', this.#onPriceInput);
+    this.#dom.get('DESTINATION').addEventListener('input', this.#onDestinationInput);
   };
 
   #onDateChange = ([userDate], formatedDate, instance) => {
@@ -305,15 +307,17 @@ export default class EditPointView extends SmartView {
 
     const key = instance.element.dataset.type;
     const reverseKey = ReverseDateType[key.toUpperCase()];
-    const reverseKeyUpper = reverseKey.toUpperCase();
-    const extremeDateKey = DateType[reverseKeyUpper].toUpperCase();
-    this.#ExtremeDate[extremeDateKey] = userDate;
+    const typeKey = reverseKey.split('date')[1].toUpperCase();
+    const extremeDateKey = DateType[typeKey].split('Date')[0];
 
-    this.#datepicker.get(reverseKeyUpper).destroy();
-    this.#datepicker.delete(reverseKeyUpper);
+    this.#extremeDate[extremeDateKey] = userDate;
 
-    const datepicker = flatpickr(this.#dateInput.get(reverseKeyUpper), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[reverseKeyUpper]] : this.#ExtremeDate[extremeDateKey]});
-    this.#datepicker.set(reverseKeyUpper, datepicker);
+    this.#datepicker.get(typeKey).destroy();
+    this.#datepicker.delete(typeKey);
+
+    const datepicker = flatpickr(this.#dateInput.get(typeKey), {...this.#datepickerOptions, defaultDate: this._state[reverseKey], [DateType[typeKey]]: this.#extremeDate[extremeDateKey]});
+
+    this.#datepicker.set(typeKey, datepicker);
   };
 
   #onFormChange = (evt) => {
@@ -338,8 +342,6 @@ export default class EditPointView extends SmartView {
   };
 
   #onPriceInput = (evt) => {
-    //evt.target.value = evt.target.value.replace(/\D/g, '');
-
     this.#formValidation();
 
     this.updateState({basePrice: parseInt(evt.target.value, 10)}, true);
@@ -371,12 +373,12 @@ export default class EditPointView extends SmartView {
   };
 
   #isDestinationValid = () => {
-    const value = this.#DOM.get('DESTINATION').value;
+    const value = this.#dom.get('DESTINATION').value;
     return value !== '' && this.#destinationsNames.includes(value);
   };
 
   #isPriceValid = () => {
-    const value = this.#DOM.get('PRICE').value;
+    const value = this.#dom.get('PRICE').value;
     return value !== '' && parseInt(value, 10) > 0;
   };
 
@@ -394,20 +396,20 @@ export default class EditPointView extends SmartView {
     const isDestinationValid = this.#isDestinationValid();
     const isPriceValid = this.#isPriceValid();
 
-    this.#setValidityState(this.#DOM.get('DESTINATION'), ErrorMessage.DESTINATION, isDestinationValid);
-    this.#setValidityState(this.#DOM.get('PRICE'), ErrorMessage.PRICE, isPriceValid);
+    this.#setValidityState(this.#dom.get('DESTINATION'), ErrorMessage.DESTINATION, isDestinationValid);
+    this.#setValidityState(this.#dom.get('PRICE'), ErrorMessage.PRICE, isPriceValid);
 
     if (isDestinationValid && callback.destinationCallback) {
       callback.destinationCallback();
     }
 
-    this.#DOM.get('SAVE').disabled = !(isDestinationValid && isPriceValid);
+    this.#dom.get('SAVE').disabled = !(isDestinationValid && isPriceValid);
   }, DEBOUNCE_DELAY, false);
 
 
   #setDom = () => {
     domItems.forEach((domItem) => {
-      this.#DOM.set(domItem.name, this.element[domItem.isList ? 'querySelectorAll' : 'querySelector'](domItem.selector));
+      this.#dom.set(domItem.name, this.element[domItem.isList ? 'querySelectorAll' : 'querySelector'](domItem.selector));
     });
   };
 
