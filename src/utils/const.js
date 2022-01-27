@@ -9,46 +9,46 @@ const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-i
 const SortType = {
   DEFAULT: 'default',
   PRICE: 'price',
-  TIME: 'time'
+  TIME: 'time',
 };
 
 const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
-  DELETE_POINT: 'DELETE_POINT'
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
 };
 
 const FilterType = {
   EVERYTHING: 'everything',
   PAST: 'past',
-  FUTURE: 'future'
+  FUTURE: 'future',
 };
 
 const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
-  ABORTING: 'ABORTING'
+  ABORTING: 'ABORTING',
 };
 
 const Color = {
-  INVALID: 'red'
+  INVALID: 'red',
 };
 
 const ErrorMessage = {
   PRICE: 'Only a positive integer is allowed',
-  DESTINATION: 'Only values from the suggested list are allowed'
+  DESTINATION: 'Only values from the suggested list are allowed',
 };
 
 const MenuItem = {
   TABLE: 'Table',
-  STATS: 'Stats'
+  STATS: 'Stats',
 };
 
 export {

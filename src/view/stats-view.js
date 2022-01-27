@@ -36,7 +36,7 @@ const customChartOption = {
   time: {
     setData: (points, type) => getFilteredPoints(points, type).reduce((duration, point) => duration + getDurationInMinutes(point.dateFrom, point.dateTo), 0),
     formatter: (val) => getDurationString(val)
-  }
+  },
 };
 
 export default class StatsView extends SmartView {

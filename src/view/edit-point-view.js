@@ -193,7 +193,7 @@ export default class EditPointView extends SmartView {
   #destinationsNames = null;
   #extremeDate = {
     max: null,
-    min: null
+    min: null,
   };
 
   #datepickerOptions = null;

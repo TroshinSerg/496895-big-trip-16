@@ -7,7 +7,7 @@ import {State} from '../utils/const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING'
+  EDITING: 'EDITING',
 };
 
 export default class PointPresenter {

@@ -3,7 +3,7 @@ import AbstractView from './abstract-view.js';
 const TripEventsMessage = {
   EVERYTHING: 'Click New Event to create your first point',
   PAST: 'There are no past events now',
-  FUTURE: 'There are no future events now'
+  FUTURE: 'There are no future events now',
 };
 
 const createNoEventsTemplate = (filterName) => (

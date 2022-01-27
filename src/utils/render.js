@@ -4,7 +4,7 @@ const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
-  AFTEREND: 'afterend'
+  AFTEREND: 'afterend',
 };
 
 const render = (container, element, place) => {
