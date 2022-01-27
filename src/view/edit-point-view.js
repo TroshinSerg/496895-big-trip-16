@@ -1,6 +1,7 @@
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import {Color, ErrorMessage, DEBOUNCE_DELAY, EVENT_TYPES} from '../utils/const.js';
+import he from 'he';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import { debounce, getRandomId } from '../utils/common.js';
@@ -384,6 +385,7 @@ export default class EditPointView extends SmartView {
     parent.style.borderBottomColor = isValid ? '' : Color.INVALID;
 
     element.setCustomValidity(isValid ? '' : message);
+    element.reportValidity();
   };
 
   #formValidation = debounce((callback = {destinationCallback: null}) => {
