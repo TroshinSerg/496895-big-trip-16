@@ -10,7 +10,7 @@ const Method = {
 const Url = {
   POINTS: 'points',
   OFFERS: 'offers',
-  DESTINATIONS: 'destinations'
+  DESTINATIONS: 'destinations',
 };
 
 export default class ApiService {

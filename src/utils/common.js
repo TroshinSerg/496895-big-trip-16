@@ -4,7 +4,7 @@ import {HOURS_IN_DAY, MINUTES_IN_HOUR, NUMBER_OF_CHARACTERS, PAD_STRING} from '.
 const KeyCode = {
   ESC: 27,
   ENTER: 13,
-  SPACE: 32
+  SPACE: 32,
 };
 
 const isEscKeyCode = (keyCode) => keyCode === KeyCode.ESC;
@@ -61,7 +61,7 @@ const getFlagMap = (point) => {
   return {
     isPast: now - Date.parse(point.dateTo) > 0,
     isFuture: now - Date.parse(point.dateFrom) <= 0,
-    isCurrent: now - Date.parse(point.dateFrom) > 0 && now - Date.parse(point.dateTo) < 0
+    isCurrent: now - Date.parse(point.dateFrom) > 0 && now - Date.parse(point.dateTo) < 0,
   };
 };
 
@@ -78,13 +78,13 @@ const filterFuture = (points) => points.filter((point) => {
 const sortPointsMethodMap = {
   default: sortByDate,
   time: sortByTime,
-  price: sortByPrice
+  price: sortByPrice,
 };
 
 const filterPointsMethodMap = {
   everything: (points) => points,
   past: filterPast,
-  future: filterFuture
+  future: filterFuture,
 };
 
 const getDurationInMinutes = (dateFrom, dateTo) => dayjs(dateTo).diff(dateFrom, 'minute');
