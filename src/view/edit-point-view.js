@@ -74,7 +74,7 @@ const createEditPointTemplate = (point, destinations, isNewPoint) => {
   )).join('');
 
   const destinationOptionsMarkup = destinations.map((destinationItem) => (
-    `<option value="${destinationItem.name}"></option>`
+    `<option value="${he.encode(destinationItem.name)}"></option>`
   )).join('');
 
   if (offers.length) {
@@ -162,7 +162,7 @@ const createEditPointTemplate = (point, destinations, isNewPoint) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}"${isDisabled ? ' disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${he.encode(basePrice)}"${isDisabled ? ' disabled' : ''}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled ? ' disabled' : ''}>${isSaving ? ' Saving...' : 'Save'}</button>
