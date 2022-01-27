@@ -1,3 +1,11 @@
+const DEBOUNCE_DELAY = 100;
+const HOURS_IN_DAY = 24;
+const MINUTES_IN_HOUR = 60;
+const NUMBER_OF_CHARACTERS = 2;
+const PAD_STRING = '0';
+
+const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
 const SortType = {
   DEFAULT: 'default',
   PRICE: 'price',
@@ -23,8 +31,6 @@ const FilterType = {
   FUTURE: 'future'
 };
 
-const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-
 const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
@@ -40,17 +46,10 @@ const ErrorMessage = {
   DESTINATION: 'Only values from the suggested list are allowed'
 };
 
-const DEBOUNCE_DELAY = 100;
-
 const MenuItem = {
   TABLE: 'Table',
   STATS: 'Stats'
 };
-
-const HOURS_IN_DAY = 24;
-const MINUTES_IN_HOUR = 60;
-const NUMBER_OF_CHARACTERS = 2;
-const PAD_STRING = '0';
 
 export {
   FilterType,

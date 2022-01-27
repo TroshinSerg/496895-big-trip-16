@@ -1,3 +1,5 @@
+const HEADER_INIT_CONFIG = {'Content-Type': 'application/json'};
+
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
@@ -10,8 +12,6 @@ const Url = {
   OFFERS: 'offers',
   DESTINATIONS: 'destinations'
 };
-
-const HEADER_INIT_CONFIG = {'Content-Type': 'application/json'};
 
 export default class ApiService {
   #endPoint = null;
@@ -98,15 +98,13 @@ export default class ApiService {
       'base_price': point.basePrice,
       'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
       'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
-      'is_favorite': point.isFavorite,
-      //'offers': point.additionalOffer
+      'is_favorite': point.isFavorite
     };
 
     delete adaptedPoint.basePrice;
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
     delete adaptedPoint.isFavorite;
-    //delete adaptedPoint.additionalOffer;
 
     return adaptedPoint;
   };
