@@ -36,8 +36,8 @@ const Color = {
 };
 
 const ErrorMessage = {
-  PRICE: 'INVALID PRICE VALUE',
-  DESTINATION: 'INVALID DESTINATION VALUE'
+  PRICE: 'Only a positive integer is allowed',
+  DESTINATION: 'Only values from the suggested list are allowed'
 };
 
 const DEBOUNCE_DELAY = 100;
