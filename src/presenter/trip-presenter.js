@@ -1,4 +1,4 @@
-import {SortPointsMethodMap, FilterPointsMethodMap} from '../utils/common.js';
+import {sortPointsMethodMap, filterPointsMethodMap} from '../utils/common.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
 import TripEventsView from '../view/trip-events-view';
 import EventsListView from '../view/events-list-view';
@@ -37,9 +37,9 @@ export default class TripPresenter {
     this.#currentFilterType = this.#filterModel.filter;
 
     const points = [...this.#tripModel.points];
-    const filteredPoints = FilterPointsMethodMap[this.#currentFilterType.toUpperCase()](points);
+    const filteredPoints = filterPointsMethodMap[this.#currentFilterType](points);
 
-    return (SortPointsMethodMap[this.#currentSortType.toUpperCase()](filteredPoints));
+    return (sortPointsMethodMap[this.#currentSortType](filteredPoints));
   }
 
   get offers() {

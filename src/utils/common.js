@@ -74,16 +74,16 @@ const filterFuture = (points) => points.filter((point) => {
   return isCurrent || isFuture;
 });
 
-const SortPointsMethodMap = {
-  DEFAULT: sortByDate,
-  TIME: sortByTime,
-  PRICE: sortByPrice
+const sortPointsMethodMap = {
+  default: sortByDate,
+  time: sortByTime,
+  price: sortByPrice
 };
 
-const FilterPointsMethodMap = {
-  EVERYTHING: (points) => points,
-  PAST: filterPast,
-  FUTURE: filterFuture
+const filterPointsMethodMap = {
+  everything: (points) => points,
+  past: filterPast,
+  future: filterFuture
 };
 
 const getDurationInMinutes = (dateFrom, dateTo) => dayjs(dateTo).diff(dateFrom, 'minute');
@@ -104,8 +104,8 @@ const getRandomId = (prefix = 'new') => `${prefix}-${Math.random() * 10}`;
 export {
   getRandomInteger,
   isEscKeyCode,
-  SortPointsMethodMap,
-  FilterPointsMethodMap,
+  sortPointsMethodMap,
+  filterPointsMethodMap,
   debounce,
   getDurationString,
   getDurationInMinutes,
