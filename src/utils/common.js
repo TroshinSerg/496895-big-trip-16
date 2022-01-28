@@ -9,13 +9,6 @@ const KeyCode = {
 
 const isEscKeyCode = (keyCode) => keyCode === KeyCode.ESC;
 
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
 const debounce = function(func, wait, immediate) {
   let timeout;
 
@@ -103,7 +96,6 @@ const getDurationString = (durationInMinutes) => {
 const getRandomId = (prefix = 'new') => `${prefix}-${Math.random() * 10}`;
 
 export {
-  getRandomInteger,
   isEscKeyCode,
   sortPointsMethodMap,
   filterPointsMethodMap,
